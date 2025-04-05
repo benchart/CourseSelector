@@ -21,7 +21,7 @@ class UserManagement:
     
     #creates a new user based on the specified parameters
     @staticmethod
-    def createNewUser(fullName: str, userName: str, age: int, classStanding: str, numCredits: int):
+    def createNewStudent(fullName: str, userName: str, age: int, classStanding: str, numCredits: int):
         data = {
             "name": fullName,
             "username": userName,
@@ -33,10 +33,31 @@ class UserManagement:
         newUser = json.dumps(data)
 
         #run the new user through the file to determine if it already exists
-        if(UserManagement.process_file("userData.txt", newUser)):
+        if(UserManagement.process_file("studentData.txt", newUser)):
             try:
-                with open("userData.txt", "a") as file:
+                with open("studentData.txt", "a") as file:
                     file.write((newUser) + "\n")
             except FileNotFoundError:
-                print("Error: File not found at userData.txt")
+                print("Error: File not found at studentData.txt")
+                return FileNotFoundError
+            
+    #creates a new user based on the specified parameters
+    @staticmethod
+    def createNewAdmin(fullName: str, userName: str, age: int, adminPasskey: int):
+        data = {
+            "name": fullName,
+            "username": userName,
+            "age": age,
+            "admin key": adminPasskey
+        }
+
+        newUser = json.dumps(data)
+
+        #run the new user through the file to determine if it already exists
+        if(UserManagement.process_file("adminData.txt", newUser)):
+            try:
+                with open("adminData.txt", "a") as file:
+                    file.write((newUser) + "\n")
+            except FileNotFoundError:
+                print("Error: File not found at adminData.txt")
                 return FileNotFoundError
