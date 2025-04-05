@@ -24,26 +24,16 @@ class CourseSelector:
     def __init__(self, databasePath: str):
         self.courseData = self.readCourseList(databasePath)
 
+    #master filtering function, uses the whole courseData dictionary to provide the most complete course list
+    def filterClassesMaster(self, creditMin: float, creditMax: float, ):
+        self.courseData = self.filterByNumCredits(self, creditMin, creditMax)
+
     #finds relevant classes based on the interest list
     def findRelevantCoursesByInterest(self, interestList: list):
         for course in self.courseData:
             topicString = course['topic']
             descString = course['descString']
         #store class code in an array to be retrieved from later
-
-    #parses json data to find classes which fit the specified parameters
-    def findCourseByParameter(self, parameter: str):
-       match parameter:
-        case "credits":
-            self.courseData = self.getByNumCredits(self, 2.0, 4.0)
-            return self.courseData
-        case 400:
-            return "Bad Request"
-        case 404:
-            return "Not Found"
-        case _:
-             self.courseData = self.getByType(self, parameter)
-             return self.courseData
     
     #fetches course based on a specified parameter
     def getByType(self, parameterName: str, codeList: list) -> dict:
@@ -60,7 +50,7 @@ class CourseSelector:
             print(F"parameter not found: {KeyError}")
 
     #filters classes based on specified credits range:
-    def getByNumCredits(self, creditsMin: float, creditsMax: float) -> dict:
+    def filterByNumCredits(self, creditsMin: float, creditsMax: float) -> dict:
         newCourseList = {}
         try:
             for course in self.courseData:
