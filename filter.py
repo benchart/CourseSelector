@@ -6,6 +6,10 @@ import json
 class Filter:
     courseModel = CourseSelector()
     courseModel.findCourseByParameter("courseDatabase.txt")
+    hello = {
+        'hello': "hello2"
+    }
+    
 
     model = ChatbotModel()
 # model.callChatbot("whats a funny joke mike")
@@ -19,4 +23,4 @@ class Filter:
     userSystem.createNewAdmin("Parley Hartwell", "phartwell", 19, 157686)
     print(userSystem.findUser("phartwell", False))
     y = json.loads(userSystem.findUser("phartwell", False))
-    print(y['interestIndicies'])
+    print(courseModel.matchInterests(y))

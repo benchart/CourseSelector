@@ -1,8 +1,20 @@
 import json
 from chatbotModel import ChatbotModel
 from userManagement import UserManagement
-from course_dataset import course_dataset
+import numpy as np
 
+INTEREST_OPTIONS = [
+         "Math", "Creative Writing", "Biology", "Robotics", "Music Theory",
+    "World History", "Computer Programming", "Environmental Science", "Public Speaking",
+    "Theater Arts", "Astronomy", "Psychology", "Film Studies", "Chemistry",
+    "Political Science", "Entrepreneurship", "Photography", "Philosophy", "Statistics",
+    "Debate", "Forensic Science", "Sociology", "Graphic Design", "Economics",
+    "Physics", "Marine Biology", "UX Design", "Digital Media", "AI",
+    "Game Development", "Ethics", "Anthropology", "Web Development", "Linguistics",
+    "Cognitive Science", "Marketing", "Botany", "Data Science", "Education Policy",
+    "Foreign Languages", "Geology", "Journalism", "Music Performance", "Gender Studies",
+    "Classical Studies", "Animation", "Social Work", "Nanotech", "Zoology"
+    ]
 class CourseSelector:
 
     model = ChatbotModel()
@@ -35,3 +47,15 @@ class CourseSelector:
         except FileNotFoundError:
             print(f"Error: File not found at {coursePath}")
             return FileNotFoundError
+
+    #returns the matching interests from the interestIndicies list
+    @staticmethod
+    def matchInterests(user: dict) -> list:
+        interestArray: list = []
+        try:
+            for index in user['interestIndicies']:
+                interestArray.append(INTEREST_OPTIONS[int(index)])
+            return interestArray
+        except KeyError:
+            print(f"Indicies not found: {KeyError}")
+        
