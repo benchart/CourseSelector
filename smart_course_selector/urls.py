@@ -15,13 +15,14 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
 from django.urls import path, include
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include('core.urls')),
-    path('students/', include('students.urls')),
-    path('admin/', include('admins.urls')),
-    path('courses/', include('courses.urls')),
+    path('admin/', admin.site.urls),                    # Django's default admin panel
+    path('', include('core.urls')),                     # Your main app (home, login, etc.)
+    path('students/', include('students.urls')),        # Student-specific routes
+    path('admins/', include('admins.urls')),            # Admin account management
+    path('courses/', include('courses.urls')),          # Courses
+    path('chat/', include('chatbot.urls')),             # ✅ Your chatbot app!
 ]
+

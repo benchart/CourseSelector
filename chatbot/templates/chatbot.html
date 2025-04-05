@@ -1,16 +1,28 @@
 {% extends 'core/base.html' %}
+
 {% block title %}Chatbot{% endblock %}
+
 {% block content %}
-<h2>Hello {{ username }}!</h2>
-<p>Would you like to talk about {{ interest1 }}, {{ interest2 }}, {{ interest3 }}, or something else?</p>
-<form method="POST">
-  {% csrf_token %}
-  <input type="text" name="message" placeholder="Ask me anything...">
-  <button type="submit">Send</button>
-</form>
-{% if response %}
-  <div class="chat-response">
-    {{ response }}
-  </div>
-{% endif %}
+<div class="max-w-3xl mx-auto px-6 py-10 space-y-8">
+  <h2 class="text-4xl font-bold text-center">Hello {{ username }}!</h2>
+  <p class="text-center text-gray-700 text-lg">
+    Would you like to talk about {{ interest1 }}, {{ interest2 }}, {{ interest3 }}, or something else?
+  </p>
+
+  <form method="POST" class="flex flex-col md:flex-row gap-4 items-start md:items-center">
+    {% csrf_token %}
+    <input type="text" name="message" placeholder="Ask me anything..." required
+      class="flex-1 px-4 py-3 border border-gray-300 rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-black" />
+    <button type="submit" class="bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition">
+      Send
+    </button>
+  </form>
+
+  {% if response %}
+    <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 text-lg text-gray-800">
+      <strong>Response:</strong><br>
+      {{ response }}
+    </div>
+  {% endif %}
+</div>
 {% endblock %}
