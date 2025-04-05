@@ -1,7 +1,7 @@
 from django.utils.timezone import now
 from django.shortcuts import render, redirect
 from .chatbotModel import ChatbotModel
-from django.contrib.auth import logout
+from django.contrib.auth import logout, login, authenticate
 from django.contrib.auth.models import User
 import os
 import json
@@ -44,7 +44,7 @@ def chatbot_view(request):
         "chat_history": request.session.get("chat_history", [])
     })
 
-# ✅ Properly indented and outside the chatbot_view function
+
 def delete_account(request):
     if request.method == "POST":
         if request.user.is_authenticated:
@@ -66,3 +66,14 @@ def delete_account(request):
                         except json.JSONDecodeError:
                             continue
     return redirect("/")
+
+
+def login_and_manage(request):
+    if request.method == "POST":
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+        return redirect("chatbot:chatbot")  # Go to chatbot after logging in
+    return redirect("chatbot:chatbot")
