@@ -27,11 +27,14 @@ class CourseSelector:
 
     #master filtering function, uses the whole courseData dictionary to provide the most complete course list
     def filterClassesMaster(self, creditMin: float = 0, creditMax: float = 1.0,
-                             catalogueNumMin: float = 0, catalogueNumMax: float = 500):
+                             catalogueNumMin: float = 0, catalogueNumMax: float = 500,
+                             instructorName: list = [], subjectName: str = [], 
+                             class_code: str = []):
         self.courseData = self.filterByNum('units', creditMin, creditMax)
-
-        print(self.courseData)
         self.courseData = self.filterByNum('catalog_number', catalogueNumMin, catalogueNumMax)
+        self.courseData = self.filterByType('instructor', instructorName)
+        self.courseData = self.filterByType('subject', subjectName)
+        self.courseData = self.filterByType('class_code', class_code)
 
 
 
@@ -41,12 +44,16 @@ class CourseSelector:
 
 
     #fetches course based on a specified parameter
-    def getByType(self, parameterName: str, codeList: list) -> list[dict]:
+    def filterByType(self, parameterName: str, codeList: list) -> list[dict]:
+        if codeList == []:
+            return self.courseData
+        
         newCourseList = []
+
         try:
             for course in self.courseData:
                 for code in codeList:
-                    if(course[parameterName] == code):
+                    if(code in course[parameterName]):
                         newCourseList.append(course)
                         continue
             return newCourseList
@@ -98,4 +105,7 @@ class CourseSelector:
                         print(f"Error parsing JSON: {e}")
         except FileNotFoundError as e:
             print(f"Filepath not found for {databasePath}")
+
+    def getCourseData(self) -> list[dict]:
+        return self.courseData
         
