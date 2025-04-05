@@ -1,6 +1,13 @@
 import json
+import numpy as np
 
 class UserManagement:   
+    studentFilepath = "studentData.txt"
+    adminFilepath = "adminData.txt"
+
+    def __init__(self, studentFilepath: str, adminFilepath: str):
+        self.studentFilepath = studentFilepath
+        self.adminFilepath = adminFilepath
 
     #reads through the file to prevent adding duplicates
     @staticmethod
@@ -21,24 +28,25 @@ class UserManagement:
     
     #creates a new user based on the specified parameters
     @staticmethod
-    def createNewStudent(fullName: str, userName: str, age: int, classStanding: str, numCredits: int):
+    def createNewStudent(fullName: str, userName: str, age: int, classStanding: str, numCredits: int, interestIndicies: np.array):
         data = {
             "name": fullName,
             "username": userName,
             "age": age,
             "class": classStanding,
-            "credits": numCredits 
+            "credits": numCredits,
+            "interestIndicies": interestIndicies
         }
 
         newUser = json.dumps(data)
 
         #run the new user through the file to determine if it already exists
-        if(UserManagement.determineDuplicate("studentData.txt", newUser)):
+        if(UserManagement.determineDuplicate(UserManagement.studentFilepath, newUser)):
             try:
-                with open("studentData.txt", "a") as file:
+                with open(UserManagement.studentFilepath, "a") as file:
                     file.write((newUser) + "\n")
             except FileNotFoundError:
-                print("Error: File not found at studentData.txt")
+                print(F"Error: File not found at {UserManagement.studentFilepath}")
                 return FileNotFoundError
             
     #creates a new user based on the specified parameters
@@ -54,12 +62,12 @@ class UserManagement:
         newUser = json.dumps(data)
 
         #run the new user through the file to determine if it already exists
-        if(UserManagement.determineDuplicate("adminData.txt", newUser)):
+        if(UserManagement.determineDuplicate(UserManagement.adminFilepath, newUser)):
             try:
-                with open("adminData.txt", "a") as file:
+                with open(UserManagement.adminFilepath, "a") as file:
                     file.write((newUser) + "\n")
             except FileNotFoundError:
-                print("Error: File not found at adminData.txt")
+                print(F"Error: File not found at {UserManagement.adminFilepath}")
                 return FileNotFoundError
         
     #returns the json string containing the specified student's data
@@ -94,20 +102,22 @@ class UserManagement:
 
     #higher-up method for searching for users
     @staticmethod   
-    def findUser(user: str, type: bool) -> str:
+    def findUser(user: str, userType: bool) -> str:      
         """
         Finds a user in the database based on their username
+        If the user is an admin, userType is true
+        If the user is a student, userType is false
 
         Arguments:
             user: the username of the user in string notation
-            type: boolean value indicating which type of user you're looking for:
+            userType: boolean value indicating which type of user you're looking for:
                     false = student
                     true = admin
 
         Returns:
             str: The json object associated with that user
         """
-        if(type):
-            return UserManagement.readAdmin(user, "adminData.txt")
+        if(userType):
+            return UserManagement.readAdmin(user, UserManagement.adminFilepath)
         else: 
-            return UserManagement.readStudent(user, "studentData.txt")
+            return UserManagement.readStudent(user, UserManagement.studentFilepath)
