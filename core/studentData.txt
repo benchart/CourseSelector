@@ -1,2 +1,5 @@
 {"name": "Parley Hartwell", "username": "phartwell", "age": 19, "class": "Freshman", "credits": 18, "interestIndicies": [1, 6, 7, 10]}
 
+
+
+{"name": "Ben", "username": "HArtman", "age": 19, "class": "Freshman", "credits": 30, "interestIndicies": []}
