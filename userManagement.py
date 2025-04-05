@@ -1,4 +1,5 @@
 import json
+import numpy as np
 
 class UserManagement:   
 
@@ -21,13 +22,14 @@ class UserManagement:
     
     #creates a new user based on the specified parameters
     @staticmethod
-    def createNewStudent(fullName: str, userName: str, age: int, classStanding: str, numCredits: int):
+    def createNewStudent(fullName: str, userName: str, age: int, classStanding: str, numCredits: int, interestIndicies: np.array):
         data = {
             "name": fullName,
             "username": userName,
             "age": age,
             "class": classStanding,
-            "credits": numCredits 
+            "credits": numCredits,
+            "interestIndicies": interestIndicies
         }
 
         newUser = json.dumps(data)
@@ -94,20 +96,24 @@ class UserManagement:
 
     #higher-up method for searching for users
     @staticmethod   
-    def findUser(user: str, type: bool) -> str:
+    def findUser(user: str, userType: bool) -> str:
+        print(user)
+        print(userType)        
         """
         Finds a user in the database based on their username
+        If the user is an admin, userType is true
+        If the user is a student, userType is false
 
         Arguments:
             user: the username of the user in string notation
-            type: boolean value indicating which type of user you're looking for:
+            userType: boolean value indicating which type of user you're looking for:
                     false = student
                     true = admin
 
         Returns:
             str: The json object associated with that user
         """
-        if(type):
+        if(userType):
             return UserManagement.readAdmin(user, "adminData.txt")
         else: 
             return UserManagement.readStudent(user, "studentData.txt")

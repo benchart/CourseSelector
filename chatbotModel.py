@@ -127,7 +127,7 @@ class ChatbotModel:
             {'role': 'user', 'content': prompt}],
             tools=[self.add_two_numbers, self.sub_two_numbers, self.get_random_joke, self.getByDescription, self.does_not_match, self.management.findUser]
         )
-        #print(response)
+        print(response)
         available_functions = {
             'add_two_numbers': self.add_two_numbers,
             'get_random_joke': self.get_random_joke,
