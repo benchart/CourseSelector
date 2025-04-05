@@ -19,10 +19,12 @@ class CourseSelector:
 
     model = ChatbotModel()
     userSystem = UserManagement("studentData.txt", "adminData.txt")
-    
-    
-    def findRelevantCourses():
+
+    @staticmethod
+    def findRelevantCourses(interestList: list):
         print()
+        self.model.callChatbot
+        #store class code in an array to be retrieved from later
 
     @staticmethod
     def findCourseByParameter(databasePath: str):
