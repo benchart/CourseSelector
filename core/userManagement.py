@@ -11,39 +11,39 @@ class UserManagement:
 
     #reads through the file to prevent adding duplicates
     @staticmethod
-def determineDuplicate(filepath: str, search_data: dict) -> bool:
-    try:
-        with open(filepath, 'r') as file:
-            lines = file.readlines()
-            for line in lines:
-                user_data = json.loads(line.strip())
+    def determineDuplicate(filepath: str, search_data: dict) -> bool:
+        try:
+            with open(filepath, 'r') as file:
+                lines = file.readlines()
+                for line in lines:
+                    user_data = json.loads(line.strip())
                 if user_data['username'].lower() == search_data['username'].lower():
                     print("User already exists")
                     return False
-        return True
-    except FileNotFoundError:
-        print(f"Error: File not found at {filepath}")
-        return FileNotFoundError
+            return True
+        except FileNotFoundError:
+            print(f"Error: File not found at {filepath}")
+            return FileNotFoundError
     
     #creates a new user based on the specified parameters
     @staticmethod
-def createNewStudent(fullName: str, userName: str, age: int, classStanding: str, numCredits: int, interestIndicies):
-    data = {
+    def createNewStudent(fullName: str, userName: str, age: int, classStanding: str, numCredits: int, interestIndicies):
+        data = {
         "name": fullName,
         "username": userName,
         "age": age,
         "class": classStanding,
         "credits": numCredits,
         "interestIndicies": interestIndicies
-    }
+        }
 
-    if UserManagement.determineDuplicate(UserManagement.studentFilepath, data):
-        try:
-            with open(UserManagement.studentFilepath, "a") as file:
-                file.write(json.dumps(data) + "\n")
-        except FileNotFoundError:
-            print(f"Error: File not found at {UserManagement.studentFilepath}")
-            return FileNotFoundError
+        if UserManagement.determineDuplicate(UserManagement.studentFilepath, data):
+            try:
+                with open(UserManagement.studentFilepath, "a") as file:
+                    file.write(json.dumps(data) + "\n")
+            except FileNotFoundError:
+                print(f"Error: File not found at {UserManagement.studentFilepath}")
+                return FileNotFoundError
             
     #creates a new user based on the specified parameters
     @staticmethod
