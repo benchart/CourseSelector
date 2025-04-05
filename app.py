@@ -7,10 +7,10 @@ logging.basicConfig(level=logging.INFO,
 
 
 def callChatbot(prompt: str):
-   response = ollama.chat('mistral', messages=[
+   response = ollama.chat('llama3.2', messages=[
       {'role': 'user',
        'content': prompt}],
-    tools=[add_two_numbers, sub_two_numbers, get_random_joke], # Actual function reference
+    tools=[add_two_numbers, sub_two_numbers, get_random_joke, does_not_match], # Actual function reference
     )
 
    print(response)
@@ -18,15 +18,19 @@ def callChatbot(prompt: str):
    available_functions = {
         'add_two_numbers': add_two_numbers,
         'get_random_joke': get_random_joke,
-        'sub_two_numbers': sub_two_numbers
+        'sub_two_numbers': sub_two_numbers,
+        'does_not_match': does_not_match
         }
 
-   for tool in response.message.tool_calls or []:
-        function_to_call = available_functions.get(tool.function.name)
-        if function_to_call:
-            print('Function output:', function_to_call(**tool.function.arguments))
-        else:
-            print('Function not found:', tool.function.name)
+   if response.message.tool_calls:
+    for tool in response.message.tool_calls or []:
+            function_to_call = available_functions.get(tool.function.name)
+            if function_to_call:
+                print('Function output:', function_to_call(**tool.function.arguments))
+            else:
+                print('Function not found:', tool.function.name)
+   else:
+    logging.warning("No valid tool was called. This could be because the input was not understood.")
 
 
 
@@ -77,5 +81,13 @@ def get_random_joke():
         logging.error(f"Error occurred while fetching joke: {str(e)}")
         return f"An error occurred while fetching a joke: {str(e)}"
     
+def does_not_match() -> str:
+    """
+  To be used when the query does not match any other tool functions
 
-callChatbot("please add 180 and 186")
+  Returns:
+    str: A message telling the user they have entered an invalid query
+  """
+    return "Invalid Query"
+
+callChatbot("what is a joke you can tell me")
