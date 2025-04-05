@@ -1,28 +1,63 @@
-{% extends 'core/base.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Course Chatbot</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white min-h-screen flex flex-col">
 
-{% block title %}Chatbot{% endblock %}
+  <!-- Header -->
+  <header class="text-center py-6 border-b border-gray-700">
+    <h1 class="text-3xl font-bold">Smart Course Chatbot</h1>
+    <p class="text-gray-400 text-sm">Powered by Ollama 3.2 – Ask anything about your schedule or classes</p>
+  </header>
 
-{% block content %}
-<div class="max-w-3xl mx-auto px-6 py-10 space-y-8">
-  <h2 class="text-4xl font-bold text-center">Hello {{ username }}!</h2>
-  <p class="text-center text-gray-700 text-lg">
-    Would you like to talk about {{ interest1 }}, {{ interest2 }}, {{ interest3 }}, or something else?
-  </p>
+  <!-- Chat Area -->
+  <main class="flex-1 overflow-y-auto px-4 py-6" id="chat-box">
+    <div class="max-w-2xl mx-auto space-y-4">
+      {% for entry in chat_history %}
+        {% if entry.sender == "user" %}
+          <div class="flex justify-end">
+            <div class="bg-blue-600 text-white p-3 rounded-lg max-w-[80%] shadow">
+              <p>{{ entry.message }}</p>
+            </div>
+          </div>
+        {% else %}
+          <div class="flex justify-start">
+            <div class="bg-gray-800 text-white p-3 rounded-lg max-w-[80%] shadow">
+              <p>{{ entry.message }}</p>
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </main>  
 
-  <form method="POST" class="flex flex-col md:flex-row gap-4 items-start md:items-center">
-    {% csrf_token %}
-    <input type="text" name="message" placeholder="Ask me anything..." required
-      class="flex-1 px-4 py-3 border border-gray-300 rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-black" />
-    <button type="submit" class="bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition">
-      Send
-    </button>
+  <!-- Input Bar -->
+  <form method="POST" class="bg-gray-800 p-4 border-t border-gray-700">
+    <div class="max-w-2xl mx-auto flex gap-3">
+      {% csrf_token %}
+      <input
+        type="text"
+        name="message"
+        placeholder="Type your question..."
+        required
+        class="flex-1 px-4 py-3 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+      <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition">
+        Send
+      </button>
+    </div>
   </form>
 
-  {% if response %}
-    <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 text-lg text-gray-800">
-      <strong>Response:</strong><br>
-      {{ response }}
-    </div>
-  {% endif %}
-</div>
-{% endblock %}
+</body>
+</html>
+
+<script>
+  window.onload = () => {
+    const chatBox = document.getElementById('chat-box');
+    chatBox.scrollTop = chatBox.scrollHeight;
+  };
+</script>
