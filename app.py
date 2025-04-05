@@ -2,25 +2,10 @@ import ollama
 import requests
 import logging
 
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s - %(levelname)s - %(message)s')
+
 tools = [
-    {
-        "name": "get_current_weather",
-        "description": "Get the current weather in a given location",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "location": {
-                    "type": "string",
-                    "description": "The city and state, e.g. San Francisco, CA",
-                },
-                "unit": {
-                    "type": "string",
-                    "enum": ["celsius", "fahrenheit"],
-                },
-            },
-            "required": ["location"],
-        },
-    },
     {
         "name": "get_random_joke",
         "description": "Get a random joke",
@@ -54,6 +39,6 @@ def get_random_joke():
         logging.error(f"Error occurred while fetching joke: {str(e)}")
         return f"An error occurred while fetching a joke: {str(e)}"
 
-
-for part in ollama.chat(model='mistral', messages=[{'role': 'user', 'content': 'tell me a joke'}], tools=tools, stream=True):
+print(get_random_joke())
+for part in ollama.chat(model='mistral', messages=[{'role': 'user', 'content': 'get me a random joke'}], tools=tools, stream=True):
         print(part['message']['content'], end='', flush=True) 
