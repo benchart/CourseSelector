@@ -2,20 +2,19 @@ import ollama
 import requests
 import logging
 
-logging.basicConfig(level=logging.INFO,
-                    format='%(asctime)s - %(levelname)s - %(message)s')
 
-tools = [
-    {
-        "name": "get_random_joke",
-        "description": "Get a random joke",
-        "parameters": {
-            "type": "object",
-            "properties": {},
-            "required": [],
-        },
-    }
-]
+def add_two_numbers(a: int, b: int) -> int:
+  """
+  Add two numbers
+
+  Args:
+    a: The first integer number
+    b: The second integer number
+
+  Returns:
+    int: The sum of the two numbers
+  """
+  return a + b
 
 def get_random_joke():
     """
@@ -33,12 +32,27 @@ def get_random_joke():
         joke_data = response.json()
         joke = f"{joke_data['setup']} - {joke_data['punchline']}"
         logging.info(f"Random joke: {joke}")
-        print("this is working")
         return joke
     except requests.exceptions.RequestException as e:
         logging.error(f"Error occurred while fetching joke: {str(e)}")
         return f"An error occurred while fetching a joke: {str(e)}"
 
-print(get_random_joke())
-for part in ollama.chat(model='mistral', messages=[{'role': 'user', 'content': 'get me a random joke'}], tools=tools, stream=True):
-        print(part['message']['content'], end='', flush=True) 
+
+
+response = ollama.chat(
+  'mistral',
+  messages=[{'role': 'user', 'content': 'use these two numbers: 5 and 1030303'}],
+  tools=[add_two_numbers], # Actual function reference
+)
+
+available_functions = {
+  'add_two_numbers': add_two_numbers,
+  'get_random_joke': get_random_joke
+}
+
+for tool in response.message.tool_calls or []:
+  function_to_call = available_functions.get(tool.function.name)
+  if function_to_call:
+    print('Function output:', function_to_call(**tool.function.arguments))
+  else:
+    print('Function not found:', tool.function.name)
