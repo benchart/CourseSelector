@@ -69,17 +69,31 @@ def signup_admin(request):
     return render(request, "core/signup_admin.html", {"form": form})
 
 def select_interests(request):
-    username = request.session.get("pending_user")
-    if not username:
-        return redirect("/")
-    user = User.objects.get(username=username)
-    profile = StudentProfile.objects.get(user=user)
+    INTEREST_OPTIONS = [
+         "Math", "Creative Writing", "Biology", "Robotics", "Music Theory",
+    "World History", "Computer Programming", "Environmental Science", "Public Speaking",
+    "Theater Arts", "Astronomy", "Psychology", "Film Studies", "Chemistry",
+    "Political Science", "Entrepreneurship", "Photography", "Philosophy", "Statistics",
+    "Debate", "Forensic Science", "Sociology", "Graphic Design", "Economics",
+    "Physics", "Marine Biology", "UX Design", "Digital Media", "AI",
+    "Game Development", "Ethics", "Anthropology", "Web Development", "Linguistics",
+    "Cognitive Science", "Marketing", "Botany", "Data Science", "Education Policy",
+    "Foreign Languages", "Geology", "Journalism", "Music Performance", "Gender Studies",
+    "Classical Studies", "Animation", "Social Work", "Nanotech", "Zoology"
+    ]
+
     if request.method == "POST":
-        selected = request.POST.getlist("interests")
-        if len(selected) < 3:
-            return render(request, "core/interest_select.html", {"interests": INTEREST_OPTIONS, "error": "Select at least 3."})
-        profile.interests = ",".join(selected)
-        profile.save()
-        login(request, user)
+        indices = request.POST.get("interests", "")
+        index_list = indices.split(",") if indices else []
+
+        if len(index_list) < 3:
+            return render(request, "core/interest_select.html", {
+                "interests": INTEREST_OPTIONS,
+                "error": "Please select at least 3 interests."
+            })
+
+        selected = [INTEREST_OPTIONS[int(i)] for i in index_list if i.isdigit()]
+        print("Selected Interests:", selected)
         return redirect("/chat")
+
     return render(request, "core/interest_select.html", {"interests": INTEREST_OPTIONS})
