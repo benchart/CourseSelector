@@ -1,5 +1,5 @@
 from chatbot.chatbotModel import ChatbotModel
-from userManagement import UserManagement
+from core.userManagement import UserManagement
 from courseSelector import CourseSelector
 import json
 

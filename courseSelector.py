@@ -1,6 +1,6 @@
 import json
 from chatbot.chatbotModel import ChatbotModel
-from userManagement import UserManagement
+from core.userManagement import UserManagement
 
 INTEREST_OPTIONS = [
          "Math", "Creative Writing", "Biology", "Robotics", "Music Theory",
