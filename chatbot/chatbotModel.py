@@ -51,27 +51,16 @@ class ChatbotModel:
             response_content.append(content)
 
         return ''.join(response_content)
-    
-    #return matching class by their description
-    def getByDescription(self) -> str:
-        """
-        Provides a description for every class available to the user
-
-        Returns:
-            str: A message telling the user they have successfully described each class
-        """
-        return "hello"
 
     #used for execution of chatbot commands
     def callChatbot(self, prompt: str):
         response = ollama.chat('llama3.2', messages=[
             {'role': 'user', 'content': prompt}],
-            tools=[self.get_random_joke, self.getByDescription, self.does_not_match, self.management.findUser]
+            tools=[self.get_random_joke, self.does_not_match, self.management.findUser]
         )
         print(response)
         available_functions = {
             'get_random_joke': self.get_random_joke,
-            'getByDescription': self.getByDescription,
             'does_not_match': self.does_not_match,
             'findUser': self.management.findUser
         }

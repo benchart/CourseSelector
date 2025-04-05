@@ -1,4 +1,5 @@
 import json
+import ollama
 from chatbot.chatbotModel import ChatbotModel
 from core.userManagement import UserManagement
 
@@ -79,7 +80,17 @@ class CourseSelector:
             return []
         interestList = CourseSelector.matchInterests(UserManagement.findUser(username, status))
         print(interestList)
-        
+
+        message = {'role': 'user', 'content': f'Based on this list of interest: {interestList}, suggest 10 of the classes from {self.courseData}'}
+        response_content = []
+
+        for part in ollama.chat(model='llama3.2', messages=[message], stream=True):
+            content = part['message']['content']
+            #print(content, end='', flush=True)
+            response_content.append(content)
+
+        print(''.join(response_content))
+        return ''.join(response_content)
 
     #returns the matching interests from the interestIndicies list
     @staticmethod
