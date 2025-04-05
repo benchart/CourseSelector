@@ -1,10 +1,32 @@
 {% extends 'core/base.html' %}
-{% block title %}Login{% endblock %}
+{% block title %}{{ title }} Login{% endblock %}
+
 {% block content %}
-<h2>Login</h2>
-<form method="POST">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Login</button>
-</form>
+<div class="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+  <div class="bg-white p-8 rounded-2xl shadow-md w-full max-w-md">
+    <h2 class="text-2xl font-semibold text-center mb-6 text-gray-700">{{ title }} Login</h2>
+
+    <form method="POST" class="space-y-4">
+      {% csrf_token %}
+      {% for field in form %}
+        <div>
+          <label class="block text-sm font-medium text-gray-700">{{ field.label }}</label>
+          {{ field }}
+          {% if field.errors %}
+            <p class="text-sm text-red-600">{{ field.errors }}</p>
+          {% endif %}
+        </div>
+      {% endfor %}
+
+      <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition">
+        Login
+      </button>
+    </form>
+
+    <p class="text-center text-sm text-gray-500 mt-4">
+      Don’t have an account? 
+      <a href="{% url 'signup_student' %}" class="text-blue-600 hover:underline">Sign up here</a>
+    </p>
+  </div>
+</div>
 {% endblock %}

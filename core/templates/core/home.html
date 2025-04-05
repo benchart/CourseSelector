@@ -1,10 +1,32 @@
-{% extends 'core/base.html' %}
-{% block title %}Home{% endblock %}
-{% block content %}
-<div class="button-container">
-  <a href="/login/student" class="button">Login as Student</a>
-  <a href="/login/admin" class="button">Login as Administrator</a>
-  <a href="/signup/student" class="button">Sign Up as Student</a>
-  <a href="/signup/admin" class="button">Sign Up as Administrator</a>
-</div>
-{% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Course Selector | Home</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-100 to-white min-h-screen flex flex-col items-center justify-center font-sans">
+  <header class="w-full text-center py-6 bg-blue-600 text-white shadow-md">
+    <h1 class="text-3xl font-bold">Smart Course Selector</h1>
+    <p class="text-lg mt-1">Empowering students to build the perfect schedule</p>
+  </header>
+
+  <main class="flex flex-col items-center justify-center flex-1 w-full px-4">
+    <div class="bg-white shadow-xl rounded-2xl p-10 max-w-md w-full text-center">
+      <h2 class="text-2xl font-semibold mb-6 text-gray-700">Get Started</h2>
+      
+      <div class="grid grid-cols-1 gap-4">
+        <a href="/login/student" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-full transition">Login as Student</a>
+        <a href="/login/admin" class="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-full transition">Login as Administrator</a>
+        <a href="/signup/student" class="bg-purple-500 hover:bg-purple-600 text-white py-2 px-4 rounded-full transition">Sign Up as Student</a>
+        <a href="/signup/admin" class="bg-yellow-500 hover:bg-yellow-600 text-white py-2 px-4 rounded-full transition">Sign Up as Administrator</a>
+      </div>
+    </div>
+  </main>
+
+  <footer class="py-4 text-center text-sm text-gray-500">
+    © 2025 Smart Course Selector. All rights reserved.
+  </footer>
+</body>
+</html>
