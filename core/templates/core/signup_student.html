@@ -34,7 +34,8 @@
           </div>
         {% endif %}
 
-        <form method="POST" class="space-y-6">
+        <!-- ✅ Added action to post to the correct URL -->
+        <form method="POST" action="{% url 'signup_student' %}" class="space-y-6">
           {% csrf_token %}
 
           <!-- Row 1 -->
@@ -71,7 +72,7 @@
                 <option value="Sophomore">Sophomore</option>
                 <option value="Junior">Junior</option>
                 <option value="Senior">Senior</option>
-                <option value="Senior">Graduate</option>
+                <option value="Graduate">Graduate</option>
               </select>
             </div>
             <div class="flex-1">
