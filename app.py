@@ -2,6 +2,8 @@ import ollama
 import requests
 import logging
 
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s - %(levelname)s - %(message)s')
 
 def add_two_numbers(a: int, b: int) -> int:
   """
@@ -15,6 +17,19 @@ def add_two_numbers(a: int, b: int) -> int:
     int: The sum of the two numbers
   """
   return a + b
+
+def sub_two_numbers(a: int, b: int) -> int:
+  """
+  Sub two numbers
+
+  Args:
+    a: The first integer number
+    b: The second integer number
+
+  Returns:
+    int: The difference of the two numbers
+  """
+  return a - b
 
 def get_random_joke():
     """
@@ -41,13 +56,16 @@ def get_random_joke():
 
 response = ollama.chat(
   'mistral',
-  messages=[{'role': 'user', 'content': 'use these two numbers: 5 and 1030303'}],
-  tools=[add_two_numbers], # Actual function reference
+  messages=[{'role': 'user', 'content': 'tell me a random joke'}],
+  tools=[add_two_numbers, sub_two_numbers, get_random_joke], # Actual function reference
 )
+
+print(response)
 
 available_functions = {
   'add_two_numbers': add_two_numbers,
-  'get_random_joke': get_random_joke
+  'get_random_joke': get_random_joke,
+  'sub_two_numbers': sub_two_numbers
 }
 
 for tool in response.message.tool_calls or []:
