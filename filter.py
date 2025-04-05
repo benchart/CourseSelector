@@ -5,7 +5,7 @@ import json
 
 class Filter:
     courseModel = CourseSelector("courseDatabase.txt")
-    courseModel.findCourseByParameter("courseDatabase.txt")
+    #courseModel.findCourseByParameter("courseDatabase.txt")
     #courseModel.getByClassCode(["PHIL-51184", "HON-41049"])
     courseModel.getByType("name", ["Art History in Biology", "Opera in Biology"])
     
@@ -23,4 +23,4 @@ class Filter:
     y = json.loads(userSystem.findUser("phartwell", False))
     print(courseModel.matchInterests(y))
     print("\n\n\n\n")
-    print(courseModel.getByNumCredits(3, 5))
+    courseModel.filterClassesMaster()

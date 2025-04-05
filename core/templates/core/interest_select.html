@@ -20,18 +20,22 @@
     <form method="post" id="interestForm" class="space-y-6">
       {% csrf_token %}
 
+      <!-- Interest Buttons -->
       <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
         {% for interest in interests %}
           <button type="button"
-                  class="interest-btn border border-gray-300 px-3 py-2 rounded hover:bg-gray-100 transition"
-                  data-index="{{ forloop.counter0 }}">
+                  class="interest-btn border border-gray-300 px-3 py-2 rounded hover:bg-gray-100 transition text-center"
+                  data-index="{{ forloop.counter0 }}"
+                  aria-label="Select {{ interest }}">
             {{ interest }}
           </button>
         {% endfor %}
       </div>
 
+      <!-- Hidden input that will hold selected interest indices -->
       <input type="hidden" name="interests" id="selectedInterests" />
 
+      <!-- Submit -->
       <div class="text-center mt-6">
         <button type="submit"
                 class="bg-black text-white px-6 py-3 rounded hover:bg-gray-800 transition">
@@ -41,25 +45,33 @@
     </form>
   </div>
 
+  <!-- Script for handling selection -->
   <script>
-    const buttons = document.querySelectorAll(".interest-btn");
-    const selected = new Set();
+    document.addEventListener("DOMContentLoaded", function () {
+      const buttons = document.querySelectorAll(".interest-btn");
+      const selected = new Set();
+      const hiddenInput = document.getElementById("selectedInterests");
 
-    buttons.forEach(btn => {
-      btn.addEventListener("click", () => {
-        const index = btn.getAttribute("data-index");
-        if (selected.has(index)) {
-          selected.delete(index);
-          btn.classList.remove("bg-blue-500", "text-white");
-        } else {
-          selected.add(index);
-          btn.classList.add("bg-blue-500", "text-white");
-        }
-
-        document.getElementById("selectedInterests").value = Array.from(selected).join(",");
+      buttons.forEach(btn => {
+        btn.addEventListener("click", () => {
+          const index = btn.getAttribute("data-index");
+          if (selected.has(index)) {
+            selected.delete(index);
+            btn.classList.remove("bg-blue-500", "text-white", "font-semibold");
+          } else {
+            selected.add(index);
+            btn.classList.add("bg-blue-500", "text-white", "font-semibold");
+          }
+          hiddenInput.value = Array.from(selected).join(",");
+        });
       });
     });
   </script>
 </body>
 </html>
-
+<!-- This template allows users to select their interests from a grid of buttons. 
+     It uses Tailwind CSS for styling and JavaScript to handle the selection logic. 
+     The selected interests are submitted as a comma-separated list in a hidden input field. -->
+<!-- The template also includes error handling to display messages if needed.
+     The form is designed to be responsive and user-friendly, ensuring a smooth experience across devices. -->
+<!-- The script at the end manages the selection and deselection of interests, updating the hidden input accordingly. -->

@@ -19,14 +19,50 @@ class CourseSelector:
 
     model = ChatbotModel()
     userSystem = UserManagement("studentData.txt", "adminData.txt")
-    courseData: dict
+    courseData: list[dict]
 
     def __init__(self, databasePath: str):
         self.courseData = self.readCourseList(databasePath)
 
+
     #master filtering function, uses the whole courseData dictionary to provide the most complete course list
-    def filterClassesMaster(self, creditMin: float, creditMax: float, ):
-        self.courseData = self.filterByNumCredits(self, creditMin, creditMax)
+    def filterClassesMaster(self, creditMin: float = 0, creditMax: float = 1.0,
+                             catalogueNumMin: float = 0, catalogueNumMax: float = 500):
+        self.courseData = self.filterByNum('units', creditMin, creditMax)
+
+        print(self.courseData)
+        self.courseData = self.filterByNum('catalog_number', catalogueNumMin, catalogueNumMax)
+
+
+
+
+
+
+
+
+    #fetches course based on a specified parameter
+    def getByType(self, parameterName: str, codeList: list) -> list[dict]:
+        newCourseList = []
+        try:
+            for course in self.courseData:
+                for code in codeList:
+                    if(course[parameterName] == code):
+                        newCourseList.append(course)
+                        continue
+            return newCourseList
+        except KeyError:
+            print(F"parameter not found: {KeyError}")
+
+    #filters classes based on specified credits range:
+    def filterByNum(self, filter: str, numMin: float, numMax: float) -> list[dict]:
+        newCourseList = []
+        try:
+            for course in self.courseData:
+                if ((int(course[filter])) >= numMin and (int(course[filter])) <= numMax):
+                    newCourseList.append(course)
+            return newCourseList
+        except KeyError:
+            print(F"Error occured: {KeyError}")
 
     #finds relevant classes based on the interest list
     def findRelevantCoursesByInterest(self, interestList: list):
@@ -34,33 +70,6 @@ class CourseSelector:
             topicString = course['topic']
             descString = course['descString']
         #store class code in an array to be retrieved from later
-    
-    #fetches course based on a specified parameter
-    def getByType(self, parameterName: str, codeList: list) -> dict:
-        newCourseList = {}
-        try:
-            for course in self.courseData:
-                for code in codeList:
-                    if(course[parameterName] == code):
-                        newCourseList.update(course)
-                        print(course)
-                        continue
-            return newCourseList
-        except KeyError:
-            print(F"parameter not found: {KeyError}")
-
-    #filters classes based on specified credits range:
-    def filterByNumCredits(self, creditsMin: float, creditsMax: float) -> dict:
-        newCourseList = {}
-        try:
-            for course in self.courseData:
-                if ((int(course['units'])) >= creditsMin and (int(course['units'])) <= creditsMax):
-                    print(course)
-                    newCourseList.update(course)
-            return newCourseList
-        except ValueError:
-            print(F"Error occured: {ValueError}")
-
 
     #returns the matching interests from the interestIndicies list
     @staticmethod
