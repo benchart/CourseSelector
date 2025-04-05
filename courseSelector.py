@@ -1,7 +1,6 @@
 import json
-from chatbotModel import ChatbotModel
+from chatbot.chatbotModel import ChatbotModel
 from userManagement import UserManagement
-import numpy as np
 
 INTEREST_OPTIONS = [
          "Math", "Creative Writing", "Biology", "Robotics", "Music Theory",
@@ -15,10 +14,15 @@ INTEREST_OPTIONS = [
     "Foreign Languages", "Geology", "Journalism", "Music Performance", "Gender Studies",
     "Classical Studies", "Animation", "Social Work", "Nanotech", "Zoology"
     ]
+
 class CourseSelector:
 
     model = ChatbotModel()
     userSystem = UserManagement("studentData.txt", "adminData.txt")
+    courseData: dict
+
+    def __init__(self, databasePath: str):
+        self.courseData = self.readCourseList(databasePath)
 
     @staticmethod
     def findRelevantCourses(interestList: list):
@@ -26,21 +30,24 @@ class CourseSelector:
         self.model.callChatbot
         #store class code in an array to be retrieved from later
 
-    @staticmethod
-    def findCourseByParameter(databasePath: str):
-       print()
+    def findCourseByParameter(self, databasePath: str):
+       for course in self.courseData:
+           if(course['class_code'] == 'HHC-H 101'):
+               print(course)
+           
     
     #reads the course database
     @staticmethod
-    def readCourseList(databasePath: str):
+    def readCourseList(databasePath: str) -> dict:
         try:
             with open(databasePath, "r") as file:
                     json_data = file.readline()
                     try:
                         newJson = json.loads(json_data)
     # Example: Print the class names and instructors
-                        for course in newJson:
-                            print(f"Class Name: {course['name']}, Instructor: {course['instructor']}")
+                        # for course in newJson:
+                        #     print(f"Class Name: {course['name']}, Instructor: {course['instructor']}")
+                        return newJson
                     except json.JSONDecodeError as e:
                         print(f"Error parsing JSON: {e}")
         except FileNotFoundError as e:

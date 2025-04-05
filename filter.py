@@ -1,13 +1,12 @@
-from chatbotModel import ChatbotModel
+from chatbot.chatbotModel import ChatbotModel
 from userManagement import UserManagement
 from courseSelector import CourseSelector
 import json
 
 class Filter:
-    courseModel = CourseSelector()
+    courseModel = CourseSelector("courseDatabase.txt")
     courseModel.findCourseByParameter("courseDatabase.txt")
     
-
     model = ChatbotModel()
 # model.callChatbot("whats a funny joke mike")
 # model.callChatbot("tell me another funny joke")
