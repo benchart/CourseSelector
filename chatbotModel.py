@@ -6,7 +6,29 @@ import logging
                     #format='%(asctime)s - %(levelname)s - %(message)s')
 
 class ChatbotModel:
-    
+    class_descriptions = [
+    "Introduction to Computer Science: A foundational course in programming, algorithms, and problem-solving.",
+    "Calculus I: Study of limits, derivatives, and integrals, focusing on single-variable functions.",
+    "Psychology 101: An overview of the basics of psychology, including behavioral science, cognition, and development.",
+    "Introduction to Philosophy: Exploration of major philosophical ideas, thinkers, and ethical dilemmas.",
+    "Chemistry 101: Basic principles of chemistry, including atomic structure, chemical reactions, and stoichiometry.",
+    "Microeconomics: Introduction to economic theory, including supply and demand, market structures, and government intervention.",
+    "World History: Survey of major events and developments from ancient to modern times across different cultures.",
+    "Statistics for Social Sciences: Introduction to statistics with applications in social research and data analysis.",
+    "English Literature: Study of classic and contemporary works of fiction, poetry, and drama from various cultures.",
+    "Introduction to Sociology: Exploration of social structures, institutions, and processes that shape human behavior.",
+    "Biology 101: Fundamentals of biology, including cell biology, genetics, and ecological systems.",
+    "Public Speaking: Develop skills in delivering persuasive, informative, and effective speeches.",
+    "Physics I: Introduction to the fundamental concepts of physics, including mechanics, motion, and energy.",
+    "Business Management: Study of business principles, including leadership, strategic planning, and organizational behavior.",
+    "Art History: Survey of the evolution of art from prehistoric times to the present, focusing on different periods and movements.",
+    "Advanced Calculus: A deeper dive into multi-variable calculus and its applications in real-world scenarios.",
+    "Environmental Science: Examination of ecological systems, environmental challenges, and sustainable practices.",
+    "Political Science 101: Introduction to political theory, systems, and institutions at the national and global levels.",
+    "Ethics in Technology: Exploration of the ethical challenges and dilemmas in the rapidly evolving tech industry.",
+    "Creative Writing: A course designed to help students develop their writing skills in fiction, poetry, and creative non-fiction."
+    ]
+
     def add_two_numbers(self, a: int, b: int) -> int:
         """
         Add two numbers
@@ -53,7 +75,8 @@ class ChatbotModel:
         except requests.exceptions.RequestException as e:
             logging.error(f"Error occurred while fetching joke: {str(e)}")
             return f"An error occurred while fetching a joke: {str(e)}"
-        
+    
+    #used for any excess queries that don't match any other function
     def does_not_match(self, prompt: str) -> str:
         """
         To be used when the query does not match any other tool functions
@@ -73,25 +96,40 @@ class ChatbotModel:
 
         return ''.join(response_content)
     
-    def callChatbot(self, prompt: str):
-        # Use functools.partial to bind the methods to the current instance
-        add_two_numbers_tool = self.add_two_numbers
-        sub_two_numbers_tool = self.sub_two_numbers
-        get_random_joke_tool = self.get_random_joke
-        does_not_match_tool = self.does_not_match
+    #return matching class by their description
+    def getByDescription(self) -> str:
+        """
+        Provides a description for every class available to the user
 
-        # Now pass the wrapped functions (partial functions)
+        Returns:
+            str: A message telling the user they have successfully described each class
+        """
+        return self.summarizeClass()
+    
+    #returns a description of a class
+    def summarizeClass(self) -> str: 
+        message = {'role': 'user', 'content': F"Give me the string array of one-word summarizations without explanation or other text:{self.class_descriptions}"}
+        response_content = []
+
+        for part in ollama.chat(model='llama3.2', messages=[message], stream=True):
+            content = part['message']['content']
+            #print(content, end='', flush=True)
+            response_content.append(content)
+
+        return ''.join(response_content)
+
+    #used for execution of chatbot commands
+    def callChatbot(self, prompt: str):
         response = ollama.chat('llama3.2', messages=[
             {'role': 'user', 'content': prompt}],
-            tools=[add_two_numbers_tool, sub_two_numbers_tool, get_random_joke_tool, does_not_match_tool]
+            tools=[self.add_two_numbers, self.sub_two_numbers, self.get_random_joke, self.getByDescription, self.does_not_match]
         )
-
         #print(response)
-
         available_functions = {
             'add_two_numbers': self.add_two_numbers,
             'get_random_joke': self.get_random_joke,
             'sub_two_numbers': self.sub_two_numbers,
+            'getByDescription': self.getByDescription,
             'does_not_match': self.does_not_match
         }
 
