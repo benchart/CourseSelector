@@ -1,10 +1,107 @@
-{% extends 'core/base.html' %}
-{% block title %}Home{% endblock %}
-{% block content %}
-<div class="button-container">
-  <a href="/login/student" class="button">Login as Student</a>
-  <a href="/login/admin" class="button">Login as Administrator</a>
-  <a href="/signup/student" class="button">Sign Up as Student</a>
-  <a href="/signup/admin" class="button">Sign Up as Administrator</a>
-</div>
-{% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Course Selector | Home</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen text-gray-900 font-sans overflow-x-hidden">
+
+  <main class="flex flex-col md:flex-row min-h-screen">
+
+    <!-- Left: Branding (35%) -->
+    <section class="bg-black text-white w-full md:w-[35%] flex flex-col justify-center items-center px-10 py-20 text-center">
+      <div class="max-w-xs space-y-4">
+        <h1 class="text-5xl font-bold">Smart Course Selector</h1>
+        <p class="text-lg text-gray-400">
+          Your personalized path to a smarter semester.
+        </p>
+      </div>
+    </section>
+
+    <!-- Right: Scrollable Info (65%) -->
+    <section class="bg-white w-full md:w-[65%] px-8 md:px-16 py-16 overflow-y-auto h-screen space-y-16">
+
+      <!-- Hero Text -->
+      <div class="space-y-6 max-w-3xl mx-auto">
+        <h2 class="text-4xl md:text-5xl font-extrabold text-gray-900 leading-tight">
+          Plan Smarter, Graduate Faster.
+        </h2>
+        <ul class="text-lg text-gray-800 space-y-2">
+          <li>✅ Personalized course recommendations using AI</li>
+          <li>✅ Avoid time conflicts and prerequisite issues</li>
+          <li>✅ Degree requirement tracking in real time</li>
+        </ul>
+      </div>
+
+      <!-- Cards Section -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+        
+        <!-- Student Card -->
+        <div class="bg-gray-50 border border-gray-200 rounded-xl shadow-md p-6 flex flex-col justify-between">
+          <img src="https://img.icons8.com/ios-filled/100/000000/student-center.png"
+               class="h-20 w-auto mb-4 mx-auto" alt="Student icon" />
+          <div class="flex-1">
+            <h3 class="text-xl font-semibold text-gray-800 mb-2">For Students</h3>
+            <p class="text-gray-600 text-sm mb-4">
+              Get custom course suggestions and build your semester with confidence. Powered by real-time degree tracking and smart matching.
+            </p>
+          </div>
+          <a href="{% url 'login_student' %}" class="bg-black text-white py-2 px-4 rounded-md hover:bg-gray-800 transition w-fit">
+            Start Now
+          </a>
+        </div>
+
+        <!-- Admin Card -->
+        <div class="bg-gray-50 border border-gray-200 rounded-xl shadow-md p-6 flex flex-col justify-between">
+          <img src="https://img.icons8.com/ios-filled/100/000000/admin-settings-male.png"
+               class="h-20 w-auto mb-4 mx-auto" alt="Admin icon" />
+          <div class="flex-1">
+            <h3 class="text-xl font-semibold text-gray-800 mb-2">For Admins</h3>
+            <p class="text-gray-600 text-sm mb-4">
+              Manage student success, course availability, and system configurations to keep everything aligned and optimized.
+            </p>
+          </div>
+          <a href="{% url 'login_admin' %}" class="bg-black text-white py-2 px-4 rounded-md hover:bg-gray-800 transition w-fit">
+            Admin Portal
+          </a>
+        </div>
+
+      </div>
+
+      <!-- More Descriptive Content -->
+      <div class="max-w-3xl mx-auto space-y-8 text-gray-700 text-lg leading-relaxed">
+        <div>
+          <h3 class="text-2xl font-semibold mb-2">How It Works</h3>
+          <p>
+            Our Smart Course Selector chatbot uses advanced AI language models to understand each student's academic progress and personal preferences. It analyzes major/minor requirements, remaining credits, and availability to offer tailored course combinations each semester.
+          </p>
+        </div>
+
+        <div>
+          <h3 class="text-2xl font-semibold mb-2">Seamless Integration</h3>
+          <p>
+            The system connects with existing university course databases and degree audit systems. Students can interact with the chatbot through a simple interface that feels more like a conversation than a checklist. As students ask questions or request recommendations, the AI responds with intelligent, real-time feedback.
+          </p>
+        </div>
+
+        <div>
+          <h3 class="text-2xl font-semibold mb-2">Why It Matters</h3>
+          <p>
+            Planning a class schedule can be overwhelming. With limited seats, prerequisite chains, and strict graduation timelines, many students feel lost. This tool provides structure and confidence. It’s more than a scheduler — it’s a digital advisor that understands your academic journey.
+          </p>
+        </div>
+
+        <div>
+          <h3 class="text-2xl font-semibold mb-2">Built for the Future</h3>
+          <p>
+            Smart Course Selector isn’t just a tool — it’s a foundation for future academic support. With ongoing updates, we aim to include predictive analytics, internship matching, and workload balancing features to ensure student success beyond just class registration.
+          </p>
+        </div>
+      </div>
+
+    </section>
+  </main>
+</body>
+</html>
