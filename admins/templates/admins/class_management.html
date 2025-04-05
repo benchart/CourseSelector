@@ -1,0 +1,26 @@
+{% extends 'core/base.html' %}
+{% block title %}Class Management{% endblock %}
+{% block content %}
+<h2>Course Database</h2>
+<form method="GET">
+  <input type="text" name="search" placeholder="Search classes">
+  <button type="submit">Search</button>
+</form>
+<ul>
+  {% for course in courses %}
+    <li>
+      {{ course.code }} - {{ course.title }}
+      <form method="POST" action="{% url 'delete_course' course.id %}" style="display:inline;">
+        {% csrf_token %}
+        <button type="submit">Remove</button>
+      </form>
+    </li>
+  {% endfor %}
+</ul>
+<h3>Add New Course</h3>
+<form method="POST">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Add Course</button>
+</form>
+{% endblock %}
