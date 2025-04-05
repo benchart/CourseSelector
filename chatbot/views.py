@@ -32,6 +32,7 @@ def chatbot_view(request):
     })
 
 
+
 # from django.shortcuts import render
 # from .chatbotModel import ChatbotModel
 

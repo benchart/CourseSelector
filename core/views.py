@@ -147,3 +147,14 @@ def select_interests(request):
         return redirect("/chat")
 
     return render(request, "core/interest_select.html", {"interests": INTEREST_OPTIONS})
+
+from django.contrib.auth import logout
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def delete_account(request):
+    if request.method == "POST":
+        user = request.user
+        user.delete()
+        logout(request)
+        return redirect("home")
