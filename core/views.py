@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from .forms import StudentSignupForm, AdminSignupForm, LoginForm
+from django.views.decorators.csrf import csrf_protect
+from django.contrib.auth.decorators import login_required
 from .userManagement import UserManagement  # <- Custom class
 import json
 
@@ -151,10 +153,11 @@ def select_interests(request):
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 
+@csrf_protect
 @login_required
 def delete_account(request):
     if request.method == "POST":
         user = request.user
-        user.delete()
         logout(request)
+        user.delete()
         return redirect("home")

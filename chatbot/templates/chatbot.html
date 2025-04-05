@@ -6,7 +6,7 @@
   <title>Smart Course Chatbot</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-900 text-white min-h-screen flex flex-col">
+<body class="bg-gray-900 text-white min-h-screen flex flex-col relative">
 
   <!-- Header -->
   <header class="text-center py-6 border-b border-gray-700">
@@ -14,26 +14,57 @@
     <p class="text-gray-400 text-sm">Powered by Ollama 3.2 – Ask anything about your schedule or classes</p>
   </header>
 
-<!-- Top Navigation Buttons -->
-<div class="flex justify-between items-center px-4 py-4 bg-gray-900 z-10 relative">
+  <!-- Top Navigation -->
+  <div class="flex justify-between items-center px-4 py-4 bg-gray-900 z-10 relative">
+    <a href="{% url 'home' %}" class="bg-gray-700 hover:bg-gray-600 text-white font-medium px-5 py-2 rounded-lg shadow transition">
+      ← Back
+    </a>
 
-  <!-- Back Button -->
-  <a href="{% url 'home' %}" class="bg-gray-700 hover:bg-gray-600 text-white font-medium px-5 py-2 rounded-lg shadow transition">
-    ← Back
-  </a>
+    <form method="POST">
+      {% csrf_token %}
+      <button type="submit" name="clear"
+        class="bg-red-600 hover:bg-red-700 text-white font-medium px-5 py-2 rounded-lg shadow transition">
+        🧹 Clear Chat
+      </button>
+    </form>
 
-  <!-- Clear Chat Button -->
-  <form method="POST">
-    {% csrf_token %}
-    <button type="submit" name="clear"
-      class="bg-red-600 hover:bg-red-700 text-white font-medium px-5 py-2 rounded-lg shadow transition">
-      🧹 Clear Chat
+    <!-- Profile Icon -->
+    <button id="profileIcon" class="text-white ml-4 hover:text-blue-400 transition" title="Account Options">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A4 4 0 019 16h6a4 4 0 013.879 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
     </button>
-  </form>
+  </div>
 
-</div>
+  <!-- Popup Dashboard -->
+  <div id="dashboardPopup" class="hidden fixed top-20 right-4 bg-gray-800 border border-gray-600 rounded-lg shadow-lg p-6 w-80 z-50">
+    {% if user.is_authenticated %}
+      <h3 class="text-lg font-semibold mb-3">Account Management</h3>
+      <form method="POST" action="{% url 'delete_account' %}">
+        {% csrf_token %}
+        <p class="text-sm mb-4 text-gray-300">Are you sure you want to delete your account? This cannot be undone.</p>
+        <button type="submit"
+          class="bg-red-600 hover:bg-red-700 w-full py-2 text-white rounded-lg font-semibold transition">
+          Delete My Account
+        </button>
+      </form>
+    {% else %}
+      <h3 class="text-lg font-semibold mb-3">Log in to manage account</h3>
+      <form method="POST" action="{% url 'chatbot:login_and_manage' %}">
+        {% csrf_token %}
+        <input type="text" name="username" placeholder="Username" required
+               class="w-full mb-2 px-4 py-2 rounded bg-gray-700 text-white border border-gray-600 placeholder-gray-400" />
+        <input type="password" name="password" placeholder="Password" required
+               class="w-full mb-4 px-4 py-2 rounded bg-gray-700 text-white border border-gray-600 placeholder-gray-400" />
+        <button type="submit"
+                class="bg-blue-600 hover:bg-blue-700 w-full py-2 text-white rounded-lg font-semibold transition">
+          Log In
+        </button>
+      </form>
+    {% endif %}
+  </div>
 
-  <!-- Chat Area -->
+  <!-- Chat Messages -->
   <main class="flex-1 overflow-y-auto px-4 py-6" id="chat-box">
     <div class="max-w-2xl mx-auto space-y-4">
       {% for entry in chat_history %}
@@ -55,30 +86,42 @@
       {% endfor %}
     </div>
   </main>
-    
-  <!-- Chat Input Form -->
-<form method="POST" class="bg-gray-800 p-4 border-t border-gray-700">
-  <div class="max-w-2xl mx-auto flex gap-3">
-    {% csrf_token %}
-    <input
-      type="text"
-      name="message"
-      placeholder="Type your question..."
-      required
-      class="flex-1 px-4 py-3 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-    />
-    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition">
-      Send
-    </button>
-  </div>
-</form>
 
+  <!-- Input -->
+  <form method="POST" class="bg-gray-800 p-4 border-t border-gray-700">
+    <div class="max-w-2xl mx-auto flex gap-3">
+      {% csrf_token %}
+      <input
+        type="text"
+        name="message"
+        placeholder="Type your question..."
+        required
+        class="flex-1 px-4 py-3 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+      <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition">
+        Send
+      </button>
+    </div>
+  </form>
+
+  <script>
+    window.onload = () => {
+      const chatBox = document.getElementById('chat-box');
+      chatBox.scrollTop = chatBox.scrollHeight;
+    };
+
+    document.getElementById("profileIcon").addEventListener("click", () => {
+      const popup = document.getElementById("dashboardPopup");
+      popup.classList.toggle("hidden");
+    });
+
+    document.addEventListener("click", (event) => {
+      const popup = document.getElementById("dashboardPopup");
+      const icon = document.getElementById("profileIcon");
+      if (!popup.contains(event.target) && !icon.contains(event.target)) {
+        popup.classList.add("hidden");
+      }
+    });
+  </script>
 </body>
 </html>
-
-<script>
-  window.onload = () => {
-    const chatBox = document.getElementById('chat-box');
-    chatBox.scrollTop = chatBox.scrollHeight;
-  };
-</script>
