@@ -81,12 +81,13 @@ class CourseSelector:
         interestList = CourseSelector.matchInterests(UserManagement.findUser(username, status))
         print(interestList)
 
-        message = {'role': 'user', 'content': f'Based on this list of interest: {interestList}, suggest 10 of the classes from {self.courseData}'}
+        message = {'role': 'user', 'content': f'Assume you are an academic advisor. Based on this list of my interests ({interestList}, pick 15 classes from the list of potential classes ({self.courseData}) and explain why you have selected them. Match your selections as closely as possible to my interests. Make sure you pick exactly 15.)'}
         response_content = []
+        print(message)
 
         for part in ollama.chat(model='llama3.2', messages=[message], stream=True):
             content = part['message']['content']
-            #print(content, end='', flush=True)
+            print(content, end='', flush=True)
             response_content.append(content)
 
         print(''.join(response_content))
