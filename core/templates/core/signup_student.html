@@ -1,10 +1,103 @@
-{% extends 'core/base.html' %}
-{% block title %}Sign Up as Student{% endblock %}
-{% block content %}
-<h2>Sign Up (Student)</h2>
-<form method="POST">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Submit</button>
-</form>
-{% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Sign Up | Smart Course Selector</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen text-gray-900 font-sans overflow-x-hidden">
+
+  <main class="flex flex-col md:flex-row min-h-screen">
+
+    <!-- Left: Branding (35%) -->
+    <section class="bg-black text-white w-full md:w-[35%] flex flex-col justify-center items-center px-10 py-20 text-center">
+      <div class="max-w-xs space-y-4">
+        <h1 class="text-5xl font-bold">Smart Course Selector</h1>
+        <p class="text-lg text-gray-400">
+          Create your student account to get started.
+        </p>
+      </div>
+    </section>
+
+    <!-- Right: Signup Form (65%) -->
+    <section class="bg-white w-full md:w-[65%] flex items-center justify-center px-6 md:px-16 py-20">
+      <div class="w-full max-w-2xl">
+        <div class="text-center mb-8">
+          <h2 class="text-4xl font-bold text-gray-900 mb-2">Student Sign Up</h2>
+          <p class="text-lg text-gray-700">Let’s build your perfect semester</p>
+        </div>
+
+        {% if error %}
+          <div class="bg-red-100 text-red-700 px-4 py-2 rounded text-sm text-center mb-6">
+            {{ error }}
+          </div>
+        {% endif %}
+
+        <form method="POST" class="space-y-6">
+          {% csrf_token %}
+
+          <!-- Row 1 -->
+          <div class="flex flex-col md:flex-row gap-6">
+            <div class="flex-1">
+              <label for="name" class="block text-sm font-medium mb-1">Full Name</label>
+              <input type="text" name="name" id="name" required class="w-full px-4 py-3 border border-gray-300 rounded-lg text-base" />
+            </div>
+            <div class="flex-1">
+              <label for="username" class="block text-sm font-medium mb-1">Username</label>
+              <input type="text" name="username" id="username" required class="w-full px-4 py-3 border border-gray-300 rounded-lg text-base" />
+            </div>
+          </div>
+
+          <!-- Row 2 -->
+          <div class="flex flex-col md:flex-row gap-6">
+            <div class="flex-1">
+              <label for="password" class="block text-sm font-medium mb-1">Password</label>
+              <input type="password" name="password" id="password" required class="w-full px-4 py-3 border border-gray-300 rounded-lg text-base" />
+            </div>
+            <div class="flex-1">
+              <label for="age" class="block text-sm font-medium mb-1">Age</label>
+              <input type="number" name="age" id="age" min="10" required class="w-full px-4 py-3 border border-gray-300 rounded-lg text-base" />
+            </div>
+          </div>
+
+          <!-- Row 3 -->
+          <div class="flex flex-col md:flex-row gap-6">
+            <div class="flex-1">
+              <label for="grade" class="block text-sm font-medium mb-1">Grade Level</label>
+              <select name="grade" id="grade" required class="w-full px-4 py-3 border border-gray-300 rounded-lg text-base">
+                <option value="">Select grade</option>
+                <option value="Freshman">Freshman</option>
+                <option value="Sophomore">Sophomore</option>
+                <option value="Junior">Junior</option>
+                <option value="Senior">Senior</option>
+                <option value="Senior">Graduate</option>
+              </select>
+            </div>
+            <div class="flex-1">
+              <label for="credits" class="block text-sm font-medium mb-1">Number of Credits</label>
+              <input type="number" name="credits" id="credits" min="0" required class="w-full px-4 py-3 border border-gray-300 rounded-lg text-base" />
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <div class="pt-4">
+            <button type="submit" class="w-full bg-black text-white py-3 rounded-lg text-base font-semibold hover:bg-gray-800 transition">
+              Create Account
+            </button>
+          </div>
+        </form>
+
+        <!-- Footer Links -->
+        <div class="text-center mt-6">
+          <p class="text-sm text-gray-600">
+            Already have an account?
+            <a href="{% url 'login_student' %}" class="text-blue-500 hover:underline font-medium">Log in</a>
+          </p>
+          <a href="{% url 'home' %}" class="text-sm text-blue-400 hover:underline">← Back to Home</a>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
