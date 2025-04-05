@@ -32,35 +32,44 @@ class CourseSelector:
         #store class code in an array to be retrieved from later
 
     #parses json data to find classes which fit the specified parameters
-    def findCourseByParameter(self, databasePath: str):
-       for course in self.courseData:
-           if(course['class_code'] == 'HHC-H 101'):
-               print(course)
+    def findCourseByParameter(self, parameter: str):
+       match parameter:
+        case "credits":
+            self.courseData = self.getByNumCredits(self, 2.0, 4.0)
+            return self.courseData
+        case 400:
+            return "Bad Request"
+        case 404:
+            return "Not Found"
+        case _:
+             self.courseData = self.getByType(self, parameter)
+             return self.courseData
     
-    #fetches course based on class code
-    def getByClassCode(self, codeList: list) -> list:
-        courseList = []
-        for course in self.courseData:
-            for code in codeList:
-                if(course['class_code'] == code):
-                    courseList.append(course)
-                    print(course)
-                    continue
-        return courseList
-    
-    #fetches course based on class code
-    def getByTypeAlphaNumeric(self, parameterName: str, codeList: list) -> list:
-        courseList = []
+    #fetches course based on a specified parameter
+    def getByType(self, parameterName: str, codeList: list) -> dict:
+        newCourseList = {}
         try:
             for course in self.courseData:
                 for code in codeList:
                     if(course[parameterName] == code):
-                        courseList.append(course)
+                        newCourseList.update(course)
                         print(course)
                         continue
-            return courseList
+            return newCourseList
         except KeyError:
             print(F"parameter not found: {KeyError}")
+
+    #filters classes based on specified credits range:
+    def getByNumCredits(self, creditsMin: float, creditsMax: float) -> dict:
+        newCourseList = {}
+        try:
+            for course in self.courseData:
+                if ((int(course['units'])) >= creditsMin and (int(course['units'])) <= creditsMax):
+                    print(course)
+                    newCourseList.update(course)
+            return newCourseList
+        except ValueError:
+            print(F"Error occured: {ValueError}")
 
 
     #returns the matching interests from the interestIndicies list
