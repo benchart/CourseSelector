@@ -72,7 +72,7 @@ class UserManagement:
 
     # Returns a student JSON string
     @staticmethod
-    def readStudent(username: str, studentPath: str) -> str:
+    def readStudent(username: str, studentPath: str) -> dict:
         try:
             with open(studentPath, 'r') as file:
                 lines = file.readlines()
@@ -83,7 +83,7 @@ class UserManagement:
                     try:
                         user_data = json.loads(line)
                         if user_data['username'].lower() == username.lower():
-                            return line
+                            return user_data
                     except json.JSONDecodeError:
                         continue
             return "No matching user found"
@@ -93,7 +93,7 @@ class UserManagement:
 
     # Returns an admin JSON string
     @staticmethod
-    def readAdmin(username: str, adminPath: str) -> str:
+    def readAdmin(username: str, adminPath: str) -> dict:
         try:
             with open(adminPath, 'r') as file:
                 lines = file.readlines()
@@ -104,7 +104,7 @@ class UserManagement:
                     try:
                         user_data = json.loads(line)
                         if user_data['username'].lower() == username.lower():
-                            return line
+                            return user_data
                     except json.JSONDecodeError:
                         continue
             return "No matching user found"
@@ -114,7 +114,7 @@ class UserManagement:
 
     # General method to find a user
     @staticmethod
-    def findUser(user: str, userType: bool) -> str:
+    def findUser(user: str, userType: bool) -> dict:
         if userType:
             return UserManagement.readAdmin(user, UserManagement.adminFilepath)
         else:

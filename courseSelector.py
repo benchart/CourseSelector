@@ -1,4 +1,5 @@
 import json
+import ollama
 from chatbot.chatbotModel import ChatbotModel
 from core.userManagement import UserManagement
 
@@ -26,7 +27,8 @@ class CourseSelector:
 
 
     #master filtering function, uses the whole courseData dictionary to provide the most complete course list
-    def filterClassesMaster(self, creditMin: float = 0, creditMax: float = 1.0,
+    def filterClassesMaster(self, username: str = "", status: bool = False, 
+                            creditMin: float = 0, creditMax: float = 1.0,
                              catalogueNumMin: float = 0, catalogueNumMax: float = 500,
                              instructorName: list = [], subjectName: str = [], 
                              class_code: str = []):
@@ -36,6 +38,7 @@ class CourseSelector:
         self.courseData = self.filterByType('subject', subjectName)
         self.courseData = self.filterByType('class_code', class_code)
 
+        self.findRelevantCourseByInterest(username, status)
 
 
 
@@ -60,7 +63,7 @@ class CourseSelector:
         except KeyError:
             print(F"parameter not found: {KeyError}")
 
-    #filters classes based on specified credits range:
+    #filters classes based on specified num range:
     def filterByNum(self, filter: str, numMin: float, numMax: float) -> list[dict]:
         newCourseList = []
         try:
@@ -72,20 +75,31 @@ class CourseSelector:
             print(F"Error occured: {KeyError}")
 
     #finds relevant classes based on the interest list
-    def findRelevantCoursesByInterest(self, interestList: list):
-        for course in self.courseData:
-            topicString = course['topic']
-            descString = course['descString']
-        #store class code in an array to be retrieved from later
+    def findRelevantCoursesByInterest(self, username: str, status: bool):
+        if(username == ""):
+            return []
+        interestList = CourseSelector.matchInterests(UserManagement.findUser(username, status))
+        print(interestList)
+
+        message = {'role': 'user', 'content': f'Based on this list of interest: {interestList}, suggest 10 of the classes from {self.courseData}'}
+        response_content = []
+
+        for part in ollama.chat(model='llama3.2', messages=[message], stream=True):
+            content = part['message']['content']
+            #print(content, end='', flush=True)
+            response_content.append(content)
+
+        print(''.join(response_content))
+        return ''.join(response_content)
 
     #returns the matching interests from the interestIndicies list
     @staticmethod
     def matchInterests(user: dict) -> list:
-        interestArray: list = []
+        interestList: list = []
         try:
             for index in user['interestIndicies']:
-                interestArray.append(INTEREST_OPTIONS[int(index)])
-            return interestArray
+                interestList.append(INTEREST_OPTIONS[int(index)])
+            return interestList
         except KeyError:
             print(f"Indicies not found: {KeyError}")
     
@@ -97,9 +111,6 @@ class CourseSelector:
                     json_data = file.readline()
                     try:
                         newJson = json.loads(json_data)
-    # Example: Print the class names and instructors
-                        # for course in newJson:
-                        #     print(f"Class Name: {course['name']}, Instructor: {course['instructor']}")
                         return newJson
                     except json.JSONDecodeError as e:
                         print(f"Error parsing JSON: {e}")
