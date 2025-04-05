@@ -94,7 +94,7 @@ class UserManagement:
 
     #higher-up method for searching for users
     @staticmethod   
-    def findUser(user: str, type: bool):
+    def findUser(user: str, type: bool) -> str:
         """
         Finds a user in the database based on their username
 
@@ -107,9 +107,7 @@ class UserManagement:
         Returns:
             str: The json object associated with that user
         """
-        print(type)
-        print(user)
         if(type):
-            UserManagement.readAdmin(user, "adminData.txt")
+            return UserManagement.readAdmin(user, "adminData.txt")
         else: 
-            UserManagement.readStudent(user, "studentData.txt")
+            return UserManagement.readStudent(user, "studentData.txt")

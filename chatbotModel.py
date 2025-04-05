@@ -1,6 +1,7 @@
 import ollama
 import requests
 import logging
+from userManagement import UserManagement
 
 #logging.basicConfig(level=logging.INFO,
                     #format='%(asctime)s - %(levelname)s - %(message)s')
@@ -122,7 +123,7 @@ class ChatbotModel:
     def callChatbot(self, prompt: str):
         response = ollama.chat('llama3.2', messages=[
             {'role': 'user', 'content': prompt}],
-            tools=[self.add_two_numbers, self.sub_two_numbers, self.get_random_joke, self.getByDescription, self.does_not_match]
+            tools=[self.add_two_numbers, self.sub_two_numbers, self.get_random_joke, self.getByDescription, self.does_not_match, UserManagement.findUser]
         )
         #print(response)
         available_functions = {
@@ -130,7 +131,8 @@ class ChatbotModel:
             'get_random_joke': self.get_random_joke,
             'sub_two_numbers': self.sub_two_numbers,
             'getByDescription': self.getByDescription,
-            'does_not_match': self.does_not_match
+            'does_not_match': self.does_not_match,
+            'UserManagement.findUser': UserManagement.findUser
         }
 
         if response.message.tool_calls:
