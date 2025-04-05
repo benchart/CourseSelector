@@ -30,6 +30,8 @@ class ChatbotModel:
     "Creative Writing: A course designed to help students develop their writing skills in fiction, poetry, and creative non-fiction."
     ]
 
+    management = UserManagement()
+
     def add_two_numbers(self, a: int, b: int) -> int:
         """
         Add two numbers
@@ -123,7 +125,7 @@ class ChatbotModel:
     def callChatbot(self, prompt: str):
         response = ollama.chat('llama3.2', messages=[
             {'role': 'user', 'content': prompt}],
-            tools=[self.add_two_numbers, self.sub_two_numbers, self.get_random_joke, self.getByDescription, self.does_not_match, UserManagement.findUser]
+            tools=[self.add_two_numbers, self.sub_two_numbers, self.get_random_joke, self.getByDescription, self.does_not_match, self.management.findUser]
         )
         #print(response)
         available_functions = {
@@ -132,7 +134,7 @@ class ChatbotModel:
             'sub_two_numbers': self.sub_two_numbers,
             'getByDescription': self.getByDescription,
             'does_not_match': self.does_not_match,
-            'UserManagement.findUser': UserManagement.findUser
+            'findUser': self.management.findUser
         }
 
         if response.message.tool_calls:
