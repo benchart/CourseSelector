@@ -1,0 +1,16 @@
+{% extends 'core/base.html' %}
+{% block title %}Select Interests{% endblock %}
+{% block content %}
+<h2>Select At Least 3 Interests</h2>
+<form method="POST">
+  {% csrf_token %}
+  <div class="interest-buttons">
+    {% for interest in interests %}
+      <label>
+        <input type="checkbox" name="interests" value="{{ interest }}"> {{ interest }}
+      </label><br>
+    {% endfor %}
+  </div>
+  <button type="submit">Submit</button>
+</form>
+{% endblock %}
