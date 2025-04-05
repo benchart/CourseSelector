@@ -4,7 +4,7 @@ class UserManagement:
 
     #reads through the file to prevent adding duplicates
     @staticmethod
-    def determineDuplicate(filepath: str, search_string: str) -> bool:
+    def determineDuplicate(filepath: str, search_string: dict) -> bool:
         try:
             with open(filepath, 'r') as file:
                 lines = file.readlines()
