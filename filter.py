@@ -11,3 +11,4 @@ from userManagement import UserManagement
 userSystem = UserManagement()
 userSystem.createNewStudent("Parley Hartwell", "phartwell", 19, "Freshman", 18)
 userSystem.createNewAdmin("Parley Hartwell", "phartwell", 19, 157686)
+print(userSystem.readAdmin("phartwell", "adminData.txt"))
