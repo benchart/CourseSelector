@@ -19,12 +19,18 @@ class CourseSelector:
 
     model = ChatbotModel()
     userSystem = UserManagement("studentData.txt", "adminData.txt")
-
+    
+    
     def findRelevantCourses():
         print()
 
     @staticmethod
     def findCourseByParameter(databasePath: str):
+       print()
+    
+    #reads the course database
+    @staticmethod
+    def readCourseList(databasePath: str):
         try:
             with open(databasePath, "r") as file:
                     json_data = file.readline()
@@ -37,16 +43,6 @@ class CourseSelector:
                         print(f"Error parsing JSON: {e}")
         except FileNotFoundError as e:
             print(f"Filepath not found for {databasePath}")
-    
-    def readCourseList(coursePath: str):
-        try:
-            with open(coursePath, 'r') as file:
-                lines = file.readlines()
-                for line in lines:
-                    print(line)
-        except FileNotFoundError:
-            print(f"Error: File not found at {coursePath}")
-            return FileNotFoundError
 
     #returns the matching interests from the interestIndicies list
     @staticmethod

@@ -6,9 +6,6 @@ import json
 class Filter:
     courseModel = CourseSelector()
     courseModel.findCourseByParameter("courseDatabase.txt")
-    hello = {
-        'hello': "hello2"
-    }
     
 
     model = ChatbotModel()
