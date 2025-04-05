@@ -104,14 +104,11 @@ class ChatbotModel:
         Returns:
             str: A message telling the user they have successfully described each class
         """
-        for classDesc in self.class_descriptions:
-            print(classDesc)
-            print(self.summarizeClass(classDesc))
-        return "All done"
+        return self.summarizeClass()
     
     #returns a description of a class
-    def summarizeClass(self, classDesc: str): 
-        message = {'role': 'user', 'content': f"Return one string describing the subject area: {classDesc}"}
+    def summarizeClass(self) -> str: 
+        message = {'role': 'user', 'content': F"Give me the string array of one-word summarizations without explanation or other text:{self.class_descriptions}"}
         response_content = []
 
         for part in ollama.chat(model='llama3.2', messages=[message], stream=True):
