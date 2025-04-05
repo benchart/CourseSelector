@@ -6,7 +6,7 @@ import json
 model = ChatbotModel()
 # model.callChatbot("whats a funny joke mike")
 # model.callChatbot("tell me another funny joke")
-model.callChatbot("find the admin with the username phartwell")
+model.callChatbot("please tell me the descriptions of all of the courses")
 # model.callChatbot("hello george")
 # model.callChatbot("please list out all of the class descriptions")
 
