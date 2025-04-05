@@ -65,14 +65,14 @@ class UserManagement:
 
     # Returns the JSON string containing the specified student's data
     @staticmethod
-    def readStudent(username: str, studentPath: str) -> str:
+    def readStudent(username: str, studentPath: str) -> dict:
         try:
             with open(studentPath, 'r') as file:
                 lines = file.readlines()
                 for line in lines:
                     user_data = json.loads(line.strip())
                     if user_data['username'].lower() == username.lower():
-                        return line
+                        return user_data
                 return "No matching user found"
         except FileNotFoundError:
             print(f"Error: File not found at {studentPath}")
@@ -80,14 +80,14 @@ class UserManagement:
 
     # Returns the JSON string containing the specified admin's data
     @staticmethod
-    def readAdmin(username: str, adminPath: str) -> str:
+    def readAdmin(username: str, adminPath: str) -> dict:
         try:
             with open(adminPath, 'r') as file:
                 lines = file.readlines()
                 for line in lines:
                     user_data = json.loads(line.strip())
                     if user_data['username'].lower() == username.lower():
-                        return line
+                        return user_data
                 return "No matching user found"
         except FileNotFoundError:
             print(f"Error: File not found at {adminPath}")
@@ -95,7 +95,7 @@ class UserManagement:
 
     # Higher-up method for searching for users
     @staticmethod
-    def findUser(user: str, userType: bool) -> str:
+    def findUser(user: str, userType: bool) -> dict:
         """
         Finds a user in the database based on their username.
         If the user is an admin, userType is True.
