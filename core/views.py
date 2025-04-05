@@ -5,27 +5,37 @@ from .forms import StudentSignupForm, AdminSignupForm, LoginForm
 from students.models import StudentProfile
 
 ADMIN_PASSKEY = "SuperSecretKey123"
-
 INTEREST_OPTIONS = ["Math", "Science", "Art", "Programming", "Robotics", "Design", "History"]
-
 
 def home(request):
     return render(request, 'core/home.html')
 
-def login_view(request, user_type):
+def login_student(request):
     if request.method == "POST":
         form = LoginForm(request.POST)
         if form.is_valid():
             user = authenticate(username=form.cleaned_data['username'], password=form.cleaned_data['password'])
             if user:
                 login(request, user)
-                if user_type == "student":
-                    return redirect("/chat")
-                else:
-                    return redirect("/admin/class-db")
+                return redirect("/chat")
     else:
         form = LoginForm()
-    return render(request, "core/login.html", {"form": form})
+    return render(request, "core/login_student.html", {"form": form})
+
+def login_admin(request):
+    if request.method == "POST":
+        form = LoginForm(request.POST)
+        access_key = request.POST.get("access_key")
+        if form.is_valid() and access_key == ADMIN_PASSKEY:
+            user = authenticate(username=form.cleaned_data['username'], password=form.cleaned_data['password'])
+            if user:
+                login(request, user)
+                return redirect("/admin/class-db")
+        elif access_key != ADMIN_PASSKEY:
+            form.add_error(None, "Invalid access key.")
+    else:
+        form = LoginForm()
+    return render(request, "core/login_admin.html", {"form": form})
 
 def signup_student(request):
     if request.method == "POST":
