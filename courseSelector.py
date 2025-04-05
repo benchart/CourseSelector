@@ -1,6 +1,5 @@
 import json
 import ollama
-from chatbot.chatbotModel import ChatbotModel
 from core.userManagement import UserManagement
 
 INTEREST_OPTIONS = [
@@ -18,7 +17,6 @@ INTEREST_OPTIONS = [
 
 class CourseSelector:
 
-    model = ChatbotModel()
     userSystem = UserManagement("studentData.txt", "adminData.txt")
     courseData: list[dict]
 
@@ -80,7 +78,7 @@ class CourseSelector:
             return []
         interestList = CourseSelector.matchInterests(UserManagement.findUser(username, status))
         print(interestList)
-
+        
         message = {'role': 'user', 'content': f'Assume you are an academic advisor. Based on this list of my interests ({interestList}, pick 15 classes from the list of potential classes in json notation ({self.courseData}) and explain why you have selected them. Match your selections as closely as possible to my interests. Make sure you pick exactly 15.)'}
         response_content = []
         print(message)

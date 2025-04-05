@@ -2,6 +2,8 @@ import ollama
 import requests
 import logging
 from core.userManagement import UserManagement
+from courseSelector import CourseSelector
+
 #from interests import INTEREST_OPTIONS, course_descriptions
 
 #logging.basicConfig(level=logging.INFO,
@@ -10,6 +12,7 @@ from core.userManagement import UserManagement
 class ChatbotModel:
 
     management = UserManagement("studentData.txt", "adminData.txt")
+    courseSelector = CourseSelector("courseDatabase.txt")
 
     def get_random_joke(self, prompt: str):
         """
@@ -56,13 +59,14 @@ class ChatbotModel:
     def callChatbot(self, prompt: str):
         response = ollama.chat('llama3.2', messages=[
             {'role': 'user', 'content': prompt}],
-            tools=[self.get_random_joke, self.does_not_match, self.management.findUser]
+            tools=[self.get_random_joke, self.does_not_match, self.management.findUser, self.courseSelector.filterClassesMaster]
         )
-        print(response)
+        #print(response)
         available_functions = {
             'get_random_joke': self.get_random_joke,
             'does_not_match': self.does_not_match,
-            'findUser': self.management.findUser
+            'findUser': self.management.findUser,
+            'filterClassesMaster': self.courseSelector.filterClassesMaster
         }
 
         if response.message.tool_calls:
