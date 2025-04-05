@@ -23,6 +23,6 @@ urlpatterns = [
     path('students/', include('students.urls')),        # Student-specific routes
     path('admins/', include('admins.urls')),            # Admin account management
     path('courses/', include('courses.urls')),          # Courses
-    path('chat/', include('chatbot.urls')),             # ✅ Your chatbot app!
+    path("chat/", include("chatbot.urls", namespace="chatbot")),             # ✅ Your chatbot app!
 ]
 
