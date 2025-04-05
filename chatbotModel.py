@@ -30,35 +30,9 @@ class ChatbotModel:
     "Creative Writing: A course designed to help students develop their writing skills in fiction, poetry, and creative non-fiction."
     ]
 
-    management = UserManagement()
+    management = UserManagement("studentData.txt", "adminData.txt")
 
-    def add_two_numbers(self, a: int, b: int) -> int:
-        """
-        Add two numbers
-
-        Args:
-            a: The first integer number
-            b: The second integer number
-
-        Returns:
-            int: The sum of the two numbers
-        """
-        return a + b
-
-    def sub_two_numbers(self, a: int, b: int) -> int:
-        """
-        Sub two numbers
-
-        Args:
-            a: The first integer number
-            b: The second integer number
-
-        Returns:
-            int: The difference of the two numbers
-        """
-        return a - b
-
-    def get_random_joke(self):
+    def get_random_joke(self, prompt: str):
         """
         Fetches a random joke from an API.
 
@@ -125,13 +99,11 @@ class ChatbotModel:
     def callChatbot(self, prompt: str):
         response = ollama.chat('llama3.2', messages=[
             {'role': 'user', 'content': prompt}],
-            tools=[self.add_two_numbers, self.sub_two_numbers, self.get_random_joke, self.getByDescription, self.does_not_match, self.management.findUser]
+            tools=[self.get_random_joke, self.getByDescription, self.does_not_match, self.management.findUser]
         )
         print(response)
         available_functions = {
-            'add_two_numbers': self.add_two_numbers,
             'get_random_joke': self.get_random_joke,
-            'sub_two_numbers': self.sub_two_numbers,
             'getByDescription': self.getByDescription,
             'does_not_match': self.does_not_match,
             'findUser': self.management.findUser
