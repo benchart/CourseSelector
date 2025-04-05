@@ -78,6 +78,7 @@ class CourseSelector:
         if(username == ""):
             return []
         interestList = CourseSelector.matchInterests(UserManagement.findUser(username, status))
+        print(interestList)
         
 
     #returns the matching interests from the interestIndicies list
