@@ -5,6 +5,31 @@ import logging
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s')
 
+
+def callChatbot(prompt: str):
+   response = ollama.chat('mistral', messages=[
+      {'role': 'user',
+       'content': prompt}],
+    tools=[add_two_numbers, sub_two_numbers, get_random_joke], # Actual function reference
+    )
+
+   print(response)
+
+   available_functions = {
+        'add_two_numbers': add_two_numbers,
+        'get_random_joke': get_random_joke,
+        'sub_two_numbers': sub_two_numbers
+        }
+
+   for tool in response.message.tool_calls or []:
+        function_to_call = available_functions.get(tool.function.name)
+        if function_to_call:
+            print('Function output:', function_to_call(**tool.function.arguments))
+        else:
+            print('Function not found:', tool.function.name)
+
+
+
 def add_two_numbers(a: int, b: int) -> int:
   """
   Add two numbers
@@ -51,26 +76,6 @@ def get_random_joke():
     except requests.exceptions.RequestException as e:
         logging.error(f"Error occurred while fetching joke: {str(e)}")
         return f"An error occurred while fetching a joke: {str(e)}"
+    
 
-
-
-response = ollama.chat(
-  'mistral',
-  messages=[{'role': 'user', 'content': 'tell me a random joke'}],
-  tools=[add_two_numbers, sub_two_numbers, get_random_joke], # Actual function reference
-)
-
-print(response)
-
-available_functions = {
-  'add_two_numbers': add_two_numbers,
-  'get_random_joke': get_random_joke,
-  'sub_two_numbers': sub_two_numbers
-}
-
-for tool in response.message.tool_calls or []:
-  function_to_call = available_functions.get(tool.function.name)
-  if function_to_call:
-    print('Function output:', function_to_call(**tool.function.arguments))
-  else:
-    print('Function not found:', tool.function.name)
+callChatbot("please add 180 and 186")
