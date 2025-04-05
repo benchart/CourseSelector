@@ -6,6 +6,8 @@ import json
 class Filter:
     courseModel = CourseSelector("courseDatabase.txt")
     courseModel.findCourseByParameter("courseDatabase.txt")
+    #courseModel.getByClassCode(["PHIL-51184", "HON-41049"])
+    courseModel.getByTypeAlphaNumeric("name", ["Art History in Biology", "Opera in Biology"])
     
     model = ChatbotModel()
 # model.callChatbot("whats a funny joke mike")
