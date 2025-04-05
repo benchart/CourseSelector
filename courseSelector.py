@@ -12,19 +12,19 @@ class CourseSelector:
         print()
 
     @staticmethod
-    def findCourseByParameter():
-        newUser = json.dumps(course_dataset)
-        for course in newUser:
-            print(f"Class Name: {course['name']}, Instructor: {course['instructor']}")
-
-        #run the new user through the file to determine if it already exists
+    def findCourseByParameter(databasePath: str):
         try:
-            with open("courseDatabase.txt", "a") as file:
-                    file.write((newUser) + "\n")
-        except FileNotFoundError:
-            print(F"Error: File not found at courseDatabase.txt")
-            return FileNotFoundError
-
+            with open(databasePath, "r") as file:
+                    json_data = file.readline()
+                    try:
+                        newJson = json.loads(json_data)
+    # Example: Print the class names and instructors
+                        for course in newJson:
+                            print(f"Class Name: {course['name']}, Instructor: {course['instructor']}")
+                    except json.JSONDecodeError as e:
+                        print(f"Error parsing JSON: {e}")
+        except FileNotFoundError as e:
+            print(f"Filepath not found for {databasePath}")
     
     def readCourseList(coursePath: str):
         try:
