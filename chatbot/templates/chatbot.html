@@ -8,35 +8,25 @@
 </head>
 <body class="bg-gray-900 text-white min-h-screen flex flex-col relative">
 
-  <!-- Header -->
-  <header class="text-center py-6 border-b border-gray-700">
-    <h1 class="text-3xl font-bold">Smart Course Chatbot</h1>
-    <p class="text-gray-400 text-sm">Powered by Ollama 3.2 – Ask anything about your schedule or classes</p>
-  </header>
-
-  <!-- Top Navigation -->
-  <div class="flex justify-between items-center px-4 py-4 bg-gray-900 z-10 relative">
-    <a href="{% url 'home' %}" class="bg-gray-700 hover:bg-gray-600 text-white font-medium px-5 py-2 rounded-lg shadow transition">
-      ← Back
+  <!-- Header with Back and Profile -->
+  <header class="flex justify-between items-center px-6 py-4 border-b border-gray-700 bg-gray-900">
+    <!-- Back Button -->
+    <a href="{% url 'home' %}" class="text-white bg-gray-700 hover:bg-gray-600 font-medium px-5 py-2 rounded-lg shadow transition">
+      Back
     </a>
 
-    <form method="POST">
-      {% csrf_token %}
-      <button type="submit" name="clear"
-        class="bg-red-600 hover:bg-red-700 text-white font-medium px-5 py-2 rounded-lg shadow transition">
-        🧹 Clear Chat
-      </button>
-    </form>
+    <h1 class="text-2xl font-bold text-center">Smart Course Chatbot</h1>
 
     <!-- Profile Icon -->
-    <button id="profileIcon" class="text-white ml-4 hover:text-blue-400 transition" title="Account Options">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A4 4 0 019 16h6a4 4 0 013.879 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+    <button id="profileIcon" class="hover:text-blue-400 transition" title="Account Options">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M5.121 17.804A4 4 0 019 16h6a4 4 0 013.879 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
       </svg>
     </button>
-  </div>
+  </header>
 
-  <!-- Popup Dashboard -->
+  <!-- Profile Dropdown -->
   <div id="dashboardPopup" class="hidden fixed top-20 right-4 bg-gray-800 border border-gray-600 rounded-lg shadow-lg p-6 w-80 z-50">
     {% if user.is_authenticated %}
       <h3 class="text-lg font-semibold mb-3">Account Management</h3>
@@ -64,9 +54,10 @@
     {% endif %}
   </div>
 
-  <!-- Chat Messages -->
-  <main class="flex-1 overflow-y-auto px-4 py-6" id="chat-box">
-    <div class="max-w-2xl mx-auto space-y-4">
+  <!-- Chat History Box -->
+<main class="flex-1 overflow-y-auto px-4 py-6 flex justify-center items-center bg-gray-900">
+  <div class="w-full max-w-3xl bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-700 h-[75vh] overflow-y-auto" id="chat-box">
+    <div class="space-y-4">
       {% for entry in chat_history %}
         {% if entry.sender == "user" %}
           <div class="flex justify-end">
@@ -77,32 +68,45 @@
           </div>
         {% else %}
           <div class="flex justify-start">
-            <div class="bg-gray-800 text-white p-3 rounded-lg max-w-[80%] shadow relative">
-              <p>{{ entry.message }}</p>
+            <div class="bg-gray-700 text-white p-3 rounded-lg max-w-[80%] shadow relative">
+              <div class="typing-message" data-text="{{ entry.message|escapejs }}"></div>
               <span class="absolute bottom-1 right-2 text-xs text-gray-400">{{ entry.timestamp }}</span>
             </div>
           </div>
         {% endif %}
       {% endfor %}
     </div>
-  </main>
+  </div>
+</main>
 
-  <!-- Input -->
-  <form method="POST" class="bg-gray-800 p-4 border-t border-gray-700">
-    <div class="max-w-2xl mx-auto flex gap-3">
-      {% csrf_token %}
-      <input
-        type="text"
-        name="message"
-        placeholder="Type your question..."
-        required
-        class="flex-1 px-4 py-3 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-      />
-      <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition">
+  <!-- Chat Input + Clear -->
+<form method="POST" class="bg-gray-900 p-4 border-t border-gray-800">
+  <div class="max-w-3xl mx-auto flex flex-col sm:flex-row items-center gap-4">
+    {% csrf_token %}
+    <input
+      type="text"
+      name="message"
+      placeholder="Type your question..."
+      required
+      class="flex-1 px-4 py-3 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+    />
+
+    <div class="flex items-center w-full sm:w-auto gap-3">
+      <button type="submit"
+              class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition w-full sm:w-auto">
         Send
       </button>
+
+      <!-- Divider -->
+      <div class="w-[1px] h-6 bg-gray-500 hidden sm:block"></div>
+
+      <button type="submit" name="clear"
+              class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg transition w-full sm:w-auto">
+        Clear
+      </button>
     </div>
-  </form>
+  </div>
+</form>
 
   <script>
     window.onload = () => {
@@ -125,3 +129,27 @@
   </script>
 </body>
 </html>
+
+<script>
+  window.onload = () => {
+    const chatBox = document.getElementById('chat-box');
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+    const messages = document.querySelectorAll('.typing-message');
+    messages.forEach((el) => {
+      const fullText = el.getAttribute('data-text');
+      el.textContent = "";
+      let i = 0;
+
+      function type() {
+        if (i < fullText.length) {
+          el.textContent += fullText.charAt(i);
+          i++;
+          setTimeout(type, 15); // Adjust typing speed here
+        }
+      }
+      type();
+    });
+  };
+</script>
+
