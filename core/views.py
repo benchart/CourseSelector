@@ -51,31 +51,34 @@ def login_admin(request):
 
 def signup_student(request):
     if request.method == "POST":
-        form = StudentSignupForm(request.POST)
-        if form.is_valid():
-            username = form.cleaned_data['username']
-            grade = form.cleaned_data['grade']
-            if User.objects.filter(username=username).exists():
-                form.add_error("username", "Username already taken")
-            else:
-                user = User.objects.create_user(username=username, password=form.cleaned_data['password'])
+        name = request.POST.get("name")
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+        age = int(request.POST.get("age"))
+        grade = request.POST.get("grade")
+        credits = int(request.POST.get("credits"))
 
-                # Save to studentData.txt with interestIndicies as empty
-                from .userManagement import UserManagement
-                UserManagement.createNewStudent(
-                    fullName=username,
-                    userName=username,
-                    age=18,
-                    classStanding=grade,
-                    numCredits=0,
-                    interestIndicies=[]
-                )
+        if User.objects.filter(username=username).exists():
+            return render(request, "core/signup_student.html", {
+                "error": "Username already taken"
+            })
 
-                request.session['pending_user'] = username
-                return redirect("/select-interests")
-    else:
-        form = StudentSignupForm()
-    return render(request, "core/signup_student.html", {"form": form})
+        User.objects.create_user(username=username, password=password)
+
+        # Save to studentData.txt
+        UserManagement.createNewStudent(
+            fullName=name,
+            userName=username,
+            age=age,
+            classStanding=grade,
+            numCredits=credits,
+            interestIndicies=[]
+        )
+
+        request.session['pending_user'] = username
+        return redirect("/select-interests")
+
+    return render(request, "core/signup_student.html")
 
 def signup_admin(request):
     if request.method == "POST":
@@ -110,11 +113,22 @@ def select_interests(request):
             })
 
         selected_indices = [int(i) for i in index_list if i.isdigit()]
+        selected_names = [INTEREST_OPTIONS[i] for i in selected_indices if i < len(INTEREST_OPTIONS)]
         username = request.session.get("pending_user")
 
         if username:
-            filepath = "studentData.txt"
+            # Update Django StudentProfile
             try:
+                user = User.objects.get(username=username)
+                profile = StudentProfile.objects.get(user=user)
+                profile.interests = ",".join(selected_names)
+                profile.save()
+            except Exception as e:
+                print("Could not update StudentProfile:", e)
+
+            # Update studentData.txt
+            try:
+                filepath = UserManagement.studentFilepath
                 with open(filepath, 'r') as f:
                     users = [json.loads(line.strip()) for line in f]
 
@@ -127,8 +141,8 @@ def select_interests(request):
                     for user in users:
                         f.write(json.dumps(user) + "\n")
 
-            except FileNotFoundError:
-                print("studentData.txt not found.")
+            except Exception as e:
+                print("Error updating studentData.txt:", e)
 
         return redirect("/chat")
 
