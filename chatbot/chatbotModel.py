@@ -1,7 +1,7 @@
 import ollama
 import requests
 import logging
-from userManagement import UserManagement
+from core.userManagement import UserManagement
 #from interests import INTEREST_OPTIONS, course_descriptions
 
 #logging.basicConfig(level=logging.INFO,
