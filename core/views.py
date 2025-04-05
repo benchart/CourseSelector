@@ -5,7 +5,18 @@ from .forms import StudentSignupForm, AdminSignupForm, LoginForm
 from students.models import StudentProfile
 
 ADMIN_PASSKEY = "SuperSecretKey123"
-INTEREST_OPTIONS = ["Math", "Science", "Art", "Programming", "Robotics", "Design", "History"]
+INTEREST_OPTIONS = [
+    "Math", "Creative Writing", "Biology", "Robotics", "Music Theory",
+    "World History", "Computer Programming", "Environmental Science", "Public Speaking",
+    "Theater Arts", "Astronomy", "Psychology", "Film Studies", "Chemistry",
+    "Political Science", "Entrepreneurship", "Photography", "Philosophy", "Statistics",
+    "Debate", "Forensic Science", "Sociology", "Graphic Design", "Economics",
+    "Physics", "Marine Biology", "UX Design", "Digital Media", "AI",
+    "Game Development", "Ethics", "Anthropology", "Web Development", "Linguistics",
+    "Cognitive Science", "Marketing", "Botany", "Data Science", "Education Policy",
+    "Foreign Languages", "Geology", "Journalism", "Music Performance", "Gender Studies",
+    "Classical Studies", "Animation", "Social Work", "Nanotech", "Zoology"
+]
 
 def home(request):
     return render(request, 'core/home.html')
@@ -69,19 +80,6 @@ def signup_admin(request):
     return render(request, "core/signup_admin.html", {"form": form})
 
 def select_interests(request):
-    INTEREST_OPTIONS = [
-         "Math", "Creative Writing", "Biology", "Robotics", "Music Theory",
-    "World History", "Computer Programming", "Environmental Science", "Public Speaking",
-    "Theater Arts", "Astronomy", "Psychology", "Film Studies", "Chemistry",
-    "Political Science", "Entrepreneurship", "Photography", "Philosophy", "Statistics",
-    "Debate", "Forensic Science", "Sociology", "Graphic Design", "Economics",
-    "Physics", "Marine Biology", "UX Design", "Digital Media", "AI",
-    "Game Development", "Ethics", "Anthropology", "Web Development", "Linguistics",
-    "Cognitive Science", "Marketing", "Botany", "Data Science", "Education Policy",
-    "Foreign Languages", "Geology", "Journalism", "Music Performance", "Gender Studies",
-    "Classical Studies", "Animation", "Social Work", "Nanotech", "Zoology"
-    ]
-
     if request.method == "POST":
         indices = request.POST.get("interests", "")
         index_list = indices.split(",") if indices else []
@@ -93,7 +91,12 @@ def select_interests(request):
             })
 
         selected = [INTEREST_OPTIONS[int(i)] for i in index_list if i.isdigit()]
-        print("Selected Interests:", selected)
+        username = request.session.get("pending_user")
+        if username:
+            user = User.objects.get(username=username)
+            profile = StudentProfile.objects.get(user=user)
+            profile.interests = ",".join(selected)
+            profile.save()
         return redirect("/chat")
 
     return render(request, "core/interest_select.html", {"interests": INTEREST_OPTIONS})

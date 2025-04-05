@@ -5,59 +5,61 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Select Your Interests</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    .interest-button.active {
-      background-color: #1f2937;
-      color: white;
-    }
-  </style>
 </head>
-<body class="min-h-screen bg-white text-gray-900 font-sans overflow-x-hidden">
-  <main class="flex flex-col items-center py-16 px-4 max-w-3xl mx-auto">
-    <h1 class="text-4xl font-bold mb-4 text-center">Select at Least 3 Interests</h1>
-    <p class="text-gray-600 text-center mb-8 max-w-xl">Your interests help us recommend the best courses for your goals. Click on the topics you enjoy.</p>
+<body class="bg-white text-gray-900 font-sans min-h-screen flex items-center justify-center p-6">
 
-    <form id="interest-form" method="POST" class="w-full">
+  <div class="w-full max-w-3xl">
+    <h2 class="text-3xl font-bold mb-6 text-center">Select at least 3 Interests</h2>
+
+    {% if error %}
+      <div class="bg-red-100 text-red-700 p-3 mb-4 rounded">
+        {{ error }}
+      </div>
+    {% endif %}
+
+    <form method="post" id="interestForm" class="space-y-6">
       {% csrf_token %}
-      <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-8">
+
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
         {% for interest in interests %}
-        <button type="button" class="interest-button border border-gray-300 rounded-lg px-4 py-2 text-center text-sm hover:bg-gray-100" data-index="{{ forloop.counter0 }}">{{ interest }}</button>
+          <button type="button"
+                  class="interest-btn border border-gray-300 px-3 py-2 rounded hover:bg-gray-100 transition"
+                  data-index="{{ forloop.counter0 }}">
+            {{ interest }}
+          </button>
         {% endfor %}
       </div>
 
-      <input type="hidden" name="interests" id="interests" value="">
+      <input type="hidden" name="interests" id="selectedInterests" />
 
-      <button type="submit" class="bg-black text-white py-2 px-6 rounded-md hover:bg-gray-800 transition">Submit</button>
-
-      {% if error %}
-      <p class="text-red-600 text-sm mt-4">{{ error }}</p>
-      {% endif %}
+      <div class="text-center mt-6">
+        <button type="submit"
+                class="bg-black text-white px-6 py-3 rounded hover:bg-gray-800 transition">
+          Submit
+        </button>
+      </div>
     </form>
-  </main>
+  </div>
 
   <script>
-    const buttons = document.querySelectorAll(".interest-button");
-    const hiddenInput = document.getElementById("interests");
-    const selectedIndices = new Set();
+    const buttons = document.querySelectorAll(".interest-btn");
+    const selected = new Set();
 
-    buttons.forEach((btn, index) => {
+    buttons.forEach(btn => {
       btn.addEventListener("click", () => {
-        btn.classList.toggle("active");
-        if (selectedIndices.has(index)) {
-          selectedIndices.delete(index);
+        const index = btn.getAttribute("data-index");
+        if (selected.has(index)) {
+          selected.delete(index);
+          btn.classList.remove("bg-blue-500", "text-white");
         } else {
-          selectedIndices.add(index);
+          selected.add(index);
+          btn.classList.add("bg-blue-500", "text-white");
         }
-        hiddenInput.value = Array.from(selectedIndices).join(",");
-      });
-    });
 
-    document.getElementById("interest-form").addEventListener("submit", (e) => {
-      if (selectedIndices.size < 3) {
-        e.preventDefault();
-        alert("Please select at least 3 interests before submitting.");
-      }
+        document.getElementById("selectedInterests").value = Array.from(selected).join(",");
+      });
     });
   </script>
 </body>
 </html>
+
