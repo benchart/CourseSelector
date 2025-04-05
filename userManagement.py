@@ -4,7 +4,7 @@ class UserManagement:
 
     #reads through the file to prevent adding duplicates
     @staticmethod
-    def determineDuplicate(filepath: str, search_string: str) -> bool:
+    def determineDuplicate(filepath: str, search_string: dict) -> bool:
         try:
             with open(filepath, 'r') as file:
                 lines = file.readlines()
@@ -91,3 +91,23 @@ class UserManagement:
         except FileNotFoundError:
             print(F"Error: File not found at {adminPath}")
             return FileNotFoundError
+
+    #higher-up method for searching for users
+    @staticmethod   
+    def findUser(user: str, type: bool) -> str:
+        """
+        Finds a user in the database based on their username
+
+        Arguments:
+            user: the username of the user in string notation
+            type: boolean value indicating which type of user you're looking for:
+                    false = student
+                    true = admin
+
+        Returns:
+            str: The json object associated with that user
+        """
+        if(type):
+            return UserManagement.readAdmin(user, "adminData.txt")
+        else: 
+            return UserManagement.readStudent(user, "studentData.txt")
