@@ -2,8 +2,8 @@ import ollama
 import requests
 import logging
 
-logging.basicConfig(level=logging.INFO,
-                    format='%(asctime)s - %(levelname)s - %(message)s')
+#logging.basicConfig(level=logging.INFO,
+                    #format='%(asctime)s - %(levelname)s - %(message)s')
 
 class ChatbotModel:
     
@@ -54,14 +54,24 @@ class ChatbotModel:
             logging.error(f"Error occurred while fetching joke: {str(e)}")
             return f"An error occurred while fetching a joke: {str(e)}"
         
-    def does_not_match(self) -> str:
+    def does_not_match(self, prompt: str) -> str:
         """
         To be used when the query does not match any other tool functions
 
+        Argument: 
+            prompt: The input prompt that was not recognized
         Returns:
             str: A message telling the user they have entered an invalid query
         """
-        return "Invalid Query"
+        message = {'role': 'user', 'content': prompt}
+        response_content = []
+
+        for part in ollama.chat(model='llama3.2', messages=[message], stream=True):
+            content = part['message']['content']
+            #print(content, end='', flush=True)
+            response_content.append(content)
+
+        return ''.join(response_content)
     
     def callChatbot(self, prompt: str):
         # Use functools.partial to bind the methods to the current instance
@@ -76,7 +86,7 @@ class ChatbotModel:
             tools=[add_two_numbers_tool, sub_two_numbers_tool, get_random_joke_tool, does_not_match_tool]
         )
 
-        print(response)
+        #print(response)
 
         available_functions = {
             'add_two_numbers': self.add_two_numbers,
@@ -89,13 +99,8 @@ class ChatbotModel:
             for tool in response.message.tool_calls or []:
                 function_to_call = available_functions.get(tool.function.name)
                 if function_to_call:
-                    print('Function output:', function_to_call(**tool.function.arguments))
+                    print('Function output:', function_to_call(**tool.function.arguments)+"\n")
                 else:
-                    print('Function not found:', tool.function.name)
+                    print('Function not found:', tool.function.name+"\n")
         else:
-            logging.warning("No valid tool was called. This could be because the input was not understood.")
-
-
-
-model = ChatbotModel()
-model.callChatbot("hello")
+            logging.warning("No valid tool was called. This could be because the input was not understood.\n")
