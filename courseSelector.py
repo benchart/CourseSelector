@@ -41,7 +41,7 @@ class CourseSelector:
         - subjectName (list): List of subject names to filter by.
         - username (str): The username of the person making the request (default is 'user1').
         """
-        # Set default values for missing arguments
+        #pull data from kwargs
         username = kwargs.get('username', 'user1')
         subjectName = kwargs.get('subjectName', [])
         instructorName = kwargs.get('instructorName', [])
@@ -52,7 +52,7 @@ class CourseSelector:
         creditMin = kwargs.get('creditMin', 0)
         class_code = kwargs.get('class_code', [])
 
-        # Set defaults for `None` values to avoid issues in filtering
+        #catch default values in case the AI decides to pass something stupid
         username = username if username != 'null' else 'user1'
         catalogueNumMax = catalogueNumMax if catalogueNumMax is not None else 9999
         catalogueNumMin = catalogueNumMin if catalogueNumMin is not None else 0
@@ -62,11 +62,18 @@ class CourseSelector:
         status = kwargs.get('status', False)  # False is default for student status
         subjectName = subjectName if subjectName is not None else []
         class_code = class_code if class_code is not None else []
-    
-        # Read the full course list from the database
+
+
+        # Check that class_code and subjectName are lists
+        if isinstance(class_code, str):
+            class_code = json.loads(class_code)
+        if isinstance(subjectName, str):
+            subjectName = json.loads(subjectName)
+
+        # reload course data
         self.courseData = self.readCourseList("courseDatabase.txt")
     
-        # Apply filters in sequence
+        #filter by parameters
         self.courseData = self._filterByNum('units', creditMin, creditMax)
         self.courseData = self._filterByNum('catalog_number', catalogueNumMin, catalogueNumMax)
         self.courseData = self._filterByType('instructor', instructorName)
@@ -122,7 +129,6 @@ class CourseSelector:
             return []
         
         interestList = CourseSelector._matchInterests(UserManagement.findUser(username, status))
-        
         interestListStr = str(interestList)
         courseDataStr = str(self.courseData)
 
