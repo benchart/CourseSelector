@@ -32,6 +32,7 @@ class CourseSelector:
                              class_code: str = []):
         '''
         This function is used to filter out classes by a variety of parameters
+        Always refer to the default parameters and thier type casting, do not input any NoneType values
 
         Arguments:
         username: The name of the user. Attempt to extrapolate but if not, resort to 'pork'
@@ -46,13 +47,14 @@ class CourseSelector:
 
         Once all of the relevant filtering algorithims have been run, findRelevantCourseByInterest runs in order to find the best suitable match for the student.
         '''
+
         self.courseData = self._filterByNum('units', creditMin, creditMax)
         self.courseData = self._filterByNum('catalog_number', catalogueNumMin, catalogueNumMax)
         self.courseData = self._filterByType('instructor', instructorName)
         self.courseData = self._filterByType('subject', subjectName)
         self.courseData = self._filterByType('class_code', class_code)
 
-        self.findRelevantCourseByInterest(username, status)
+        self.findRelevantCoursesByInterest(username, status)
 
 
     #fetches course based on a specified parameter
@@ -77,9 +79,13 @@ class CourseSelector:
         newCourseList = []
         try:
             for course in self.courseData:
-                print(course[filter])
-                if ((int(course[filter])) >= numMin and (int(course[filter])) <= numMax):
-                    newCourseList.append(course)
+                try:
+                    course_value = int(course[filter])  # Try converting to integer
+                    if course_value >= numMin and course_value <= numMax:
+                        # Proceed with your logic
+                        newCourseList.append(course)
+                except ValueError:
+                    print(f"Invalid value for {filter}: {course[filter]}. Skipping this course.")
             return newCourseList
         except KeyError:
             print(F"Error occured: {KeyError}")
