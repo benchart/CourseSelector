@@ -41,6 +41,7 @@ class CourseSelector:
         - status (bool): Whether the user is an admin (True) or a student (False).
         - subjectName (list): List of subject names to filter by.
         - username (str): The username of the person making the request (default is 'user1').
+        - prompt (str):  the original input prompt string
         """
         
         # Handle 'null' values and convert them to None or appropriate default
@@ -48,10 +49,11 @@ class CourseSelector:
             return default if value == 'null' or value is None or value == '' else value
 
         username = handle_null(kwargs.get('username', 'user1'), 'user1')
-        catalogueNumMax = handle_null(kwargs.get('catalogueNumMax', 9999), 9999)
+        catalogueNumMax = handle_null(kwargs.get('catalogueNumMax', 999999), 999999)
         catalogueNumMin = handle_null(kwargs.get('catalogueNumMin', 0), 0)
-        creditMax = handle_null(kwargs.get('creditMax', 5), 5)
+        creditMax = handle_null(kwargs.get('creditMax', 10), 10)
         creditMin = handle_null(kwargs.get('creditMin', 0), 0)
+        prompt = handle_null(kwargs.get('prompt', 'No additional instructions'), 'No additional instructions')
 
         class_code = kwargs.get('class_code', [])
         instructorName = kwargs.get('instructorName', [])
@@ -111,8 +113,8 @@ class CourseSelector:
         self.courseData = self._filterByType('class_code', class_code)
 
         # After filtering based on the provided parameters, find relevant courses by interest
-        print(self.findRelevantCoursesByInterest(username, status))
-        return self.findRelevantCoursesByInterest(username, status)
+        print(self.findRelevantCoursesByInterest(username, status, prompt))
+        return self.findRelevantCoursesByInterest(username, status, prompt)
         #return self.courseData
 
 
@@ -164,13 +166,13 @@ class CourseSelector:
             print(F"Error occured: {KeyError}")
 
     #finds relevant classes based on the interest list
-    def findRelevantCoursesByInterest(self, username: str, status: bool) -> str:
+    def findRelevantCoursesByInterest(self, username: str, status: bool, prompt: str) -> str:
 
         interestList = CourseSelector._matchInterests(UserManagement.findUser(username, status))
 
         message = {
             'role': 'user', 
-            'content': f'Assume you are my academic advisor. Based on this list of my interests {interestList}, pick 15 classes and explain why you have selected them. Match your selections as closely as possible to my interests. Use this data as your list of potential options: {self.courseData}'
+            'content': f'Assume you are my academic advisor. Based on this list of my interests {interestList} and the prompt: {prompt}, generate a stuiable reccomendation of classes for me to take. List out ~10 different options and their relevancy. Use this data as your list of potential options: {self.courseData}'
         }
 
         response_content = []

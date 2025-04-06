@@ -4,3 +4,4 @@
 {"name": "jonjono", "username": "jonjono", "age": 21, "admin key": "SuperSecretKey123"}
 {"name": "Porki", "username": "Porki", "age": 21, "admin key": "SuperSecretKey123"}
 {"name": "Hartmana", "username": "Hartmana", "age": 21, "admin key": "SuperSecretKey123"}
+{"name": "benchart1", "username": "benchart1", "password": "Boot", "age": 21, "admin key": "SuperSecretKey123"}

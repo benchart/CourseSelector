@@ -49,16 +49,26 @@ def login_admin(request):
     if request.method == "POST":
         form = LoginForm(request.POST)
         access_key = request.POST.get("access_key")
-        if form.is_valid() and access_key == ADMIN_PASSKEY:
-            user = authenticate(username=form.cleaned_data['username'], password=form.cleaned_data['password'])
-            if user:
+
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+
+            user = authenticate(username=username, password=password)
+
+            if access_key != ADMIN_PASSKEY:
+                form.add_error("access_key", "Invalid access key.")
+            elif user is None:
+                form.add_error("username", "Incorrect username or password.")
+                form.add_error("password", "")  # This just marks the password field
+            else:
                 login(request, user)
-                return redirect("/admin/class-db")
-        elif access_key != ADMIN_PASSKEY:
-            form.add_error(None, "Invalid access key.")
+                return redirect("class_management")
     else:
         form = LoginForm()
+
     return render(request, "core/login_admin.html", {"form": form})
+
 
 def signup_student(request):
     if request.method == "POST":
@@ -104,14 +114,14 @@ def signup_admin(request):
                 form.add_error("passkey", "Incorrect admin passkey")
             elif User.objects.filter(username=username).exists():
                 form.add_error("username", "Username already taken")
+            elif not UserManagement._determineDuplicate(UserManagement.adminFilepath, {"username": username}):
+                form.add_error("username", "An admin with this username already exists.")
             else:
                 User.objects.create_user(username=username, password=password)
 
-                # Save admin info to studentData.txt or other system if needed
                 UserManagement.createNewAdmin(
-                    fullName=username,
                     userName=username,
-                    age=21,
+                    password=password,
                     adminPasskey=ADMIN_PASSKEY
                 )
 
@@ -120,6 +130,9 @@ def signup_admin(request):
         form = AdminSignupForm()
 
     return render(request, "core/signup_admin.html", {"form": form})
+
+
+
 
 def select_interests(request):
     if request.method == "POST":
@@ -174,7 +187,10 @@ def class_management(request):
     db = DatabaseManager(DATABASE_PATH)
 
     search_query = request.GET.get("search", "")
-    courses = db.searchCourse(search_query) if search_query else db.courseData
+    if search_query:
+        courses = db.searchCourse(search_query)
+    else:
+        courses = db.courseData
 
     if request.method == "POST":
         form = CourseForm(request.POST)
