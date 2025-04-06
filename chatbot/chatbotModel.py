@@ -87,8 +87,7 @@ class ChatbotModel:
                     self.courseSelector.filterClassesMaster
                 ]
             )
-            print(response)
-
+            
             available_functions = {
                 'get_random_joke': self.get_random_joke,
                 'does_not_match': self.does_not_match,
