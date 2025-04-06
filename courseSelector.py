@@ -106,7 +106,7 @@ class CourseSelector:
             for course in self.courseData:
                 try:
                     course_value = int(course[filter])
-                    
+
                     if course_value >= numMin and course_value <= numMax:
                         newCourseList.append(course)
                 except ValueError:
@@ -122,8 +122,11 @@ class CourseSelector:
             return []
         
         interestList = CourseSelector._matchInterests(UserManagement.findUser(username, status))
+        
+        interestListStr = str(interestList)
+        courseDataStr = str(self.courseData)
 
-        message = {'role': 'user', 'content': f'Assume you are an academic advisor. Based on this list of my interests ({interestList}, pick 15 classes from the list of potential classes in json notation ({self.courseData}) and explain why you have selected them. Match your selections as closely as possible to my interests. Make sure you pick exactly 15.)'}
+        message = {'role': 'user', 'content': f'Assume you are an academic advisor. Based on this list of my interests ({interestListStr}, pick 15 classes from the list of potential classes in json notation ({courseDataStr}) and explain why you have selected them. Match your selections as closely as possible to my interests. Make sure you pick exactly 15.)'}
         response_content = []
         print(message)
 
