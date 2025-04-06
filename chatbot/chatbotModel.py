@@ -115,6 +115,7 @@ class ChatbotModel:
         else:
             result = response.message.content  # Fallback to assistant's actual message
 
+        print(result)
         return result
     
 

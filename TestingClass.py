@@ -27,6 +27,7 @@ class TestingClass:
 # model.callChatbot("hello george")
     #model.callChatbot("what classes should I take if I dont want any morning classes")
     model.callChatbot("hi")
+    model.callChatbot("help me schedule a class for college")
 
     userSystem = UserManagement("studentData.txt", "adminData.txt")
     # userSystem.createNewStudent("Parley Hartwell", "phartwell", 19, "Freshman", 18, [1,6,7,10,100,23])
