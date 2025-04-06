@@ -55,8 +55,16 @@ class CourseSelector:
         # Catch default values in case the AI decides to pass something invalid
         username = username if username != 'null' else 'user1'
         catalogueNumMax = catalogueNumMax if catalogueNumMax is not None else 9999
+        
+        if(catalogueNumMax == 0):
+            catalogueNumMax = 9999
+
         catalogueNumMin = catalogueNumMin if catalogueNumMin is not None else 0
         creditMax = creditMax if creditMax is not None else 5
+
+        if(creditMax == 0):
+            creditMax = 5
+
         creditMin = creditMin if creditMin is not None else 0
         instructorName = instructorName if instructorName is not None else []
         status = kwargs.get('status', False)  # False is default for student status
@@ -138,16 +146,21 @@ class CourseSelector:
             return []
         
         interestList = CourseSelector._matchInterests(UserManagement.findUser(username, status))
-        interestListStr = str(interestList)
-        courseDataStr = str(self.courseData)
 
-        message = {'role': 'user', 'content': f'Assume you are an academic advisor. Based on this list of my interests ({interestListStr}, pick 15 classes from the list of potential classes in json notation ({courseDataStr}) and explain why you have selected them. Match your selections as closely as possible to my interests. Make sure you pick exactly 15.)'}
+        message = {
+            'role': 'user', 
+            'content': f'Assume you are an academic advisor. Based on this list of my interests {interestList}, pick 15 classes from the list of potential classes and explain why you have selected them. Match your selections as closely as possible to my interests. Make sure you pick exactly 15. {self.courseData}'
+        }
+
         response_content = []
         print(message)
 
         for part in ollama.chat(model='llama3.2', messages=[message], stream=True):
             content = part['message']['content']
-            #print(content, end='', flush=True)
+            
+            if not isinstance(content, str):
+                content = str(content)
+
             response_content.append(content)
         return ''.join(response_content)
 
