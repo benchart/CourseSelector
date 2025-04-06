@@ -61,7 +61,7 @@ class ChatbotModel:
             {'role': 'user', 'content': prompt}],
             tools=[self.get_random_joke, self.does_not_match, self.management.findUser, self.courseSelector.filterClassesMaster]
         )
-        #print(response)
+        print(response)
         available_functions = {
             'get_random_joke': self.get_random_joke,
             'does_not_match': self.does_not_match,
@@ -73,7 +73,7 @@ class ChatbotModel:
             for tool in response.message.tool_calls or []:
                 function_to_call = available_functions.get(tool.function.name)
                 if function_to_call:
-                    print('Function output:', function_to_call(**tool.function.arguments)+"\n")
+                    print('Function Output', function_to_call(**tool.function.arguments)+"\n")
                 else:
                     print('Function not found:', tool.function.name+"\n")
         else:

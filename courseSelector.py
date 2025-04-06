@@ -30,6 +30,22 @@ class CourseSelector:
                              catalogueNumMin: float = 0, catalogueNumMax: float = 500,
                              instructorName: list = [], subjectName: str = [], 
                              class_code: str = []):
+        '''
+        This function is used to filter out classes by a variety of parameters
+
+        Arguments:
+        username: The name of the user. Attempt to extrapolate but if not, resort to 'pork'
+        status: this boolean value indicates whether or not the user is a student or an admin. If true, they are admin. If false, student.
+        creditMin: the minimum number of credits prefered by the user
+        creditMax: the maximum number of credits preferred by the user
+        catalogueNumMin: the lowest catalogue number preferred by the user. Useful for determining if the user wants to take 100 level classes, or nothing lower than 300, for example.
+        catalogueNumMax: the maximum catalogue number preffered by the user. Useful for determining the upper limit of difficulty for classes.
+        instructorName: a list of names of instructors. Usually will be left blank unless specifically requested.
+        subjectName: the list containing the name(s) of the subject the user is looking for.
+        class_code: a list of class codes that the user is requesting.
+
+        Once all of the relevant filtering algorithims have been run, findRelevantCourseByInterest runs in order to find the best suitable match for the student.
+        '''
         self.courseData = self._filterByNum('units', creditMin, creditMax)
         self.courseData = self._filterByNum('catalog_number', catalogueNumMin, catalogueNumMax)
         self.courseData = self._filterByType('instructor', instructorName)
@@ -51,7 +67,7 @@ class CourseSelector:
                 for code in codeList:
                     if(code in course[parameterName]):
                         newCourseList.append(course)
-                        continue
+                        break
             return newCourseList
         except KeyError:
             print(F"parameter not found: {KeyError}")
@@ -61,6 +77,7 @@ class CourseSelector:
         newCourseList = []
         try:
             for course in self.courseData:
+                print(course[filter])
                 if ((int(course[filter])) >= numMin and (int(course[filter])) <= numMax):
                     newCourseList.append(course)
             return newCourseList
