@@ -161,7 +161,6 @@ class CourseSelector:
     def findRelevantCoursesByInterest(self, username: str, status: bool):
 
         interestList = CourseSelector._matchInterests(UserManagement.findUser(username, status))
-        print(f"Interest List: {interestList}")
 
         message = {
             'role': 'user', 
@@ -184,7 +183,6 @@ class CourseSelector:
     def _matchInterests(user: dict) -> list:
         interestList: list = []
         try:
-            print(user)
             for index in user['interestIndicies']:
                 interestList.append(INTEREST_OPTIONS[int(index)])
             return interestList
