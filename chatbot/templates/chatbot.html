@@ -6,23 +6,16 @@
   <title>Smart Course Chatbot</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    #toast {
-      position: fixed;
-      top: 1rem;
-      left: 50%;
-      transform: translateX(-50%);
-      background-color: #22c55e;
-      color: white;
-      padding: 12px 24px;
-      border-radius: 0.5rem;
-      display: none;
-      z-index: 1000;
+    .timestamp {
+      font-size: 0.75rem;
+      color: #9ca3af;
+      margin-top: 0.25rem;
+      display: block;
+      text-align: right;
     }
   </style>
 </head>
 <body class="bg-black text-white h-screen flex flex-col overflow-hidden">
-
-<div id="toast"></div>
 
 <!-- Header -->
 <header class="px-6 py-4 border-b border-gray-700 bg-black relative">
@@ -44,82 +37,84 @@
   </div>
 </header>
 
-<!-- Undo/Redo Buttons -->
-<div class="flex justify-center items-center gap-4 py-4 bg-black">
-  <button id="undoBtn" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition">
-    ⟲ Undo
-  </button>
-  <div class="w-px h-6 bg-gray-500"></div>
-  <button id="redoBtn" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition">
-    ↻ Redo
-  </button>
-</div>
-
 <!-- Profile Dropdown -->
-<div id="dashboardPopup" class="hidden fixed top-20 right-4 bg-gray-800 border border-gray-600 rounded-lg shadow-lg p-6 w-80 z-50">
+<div id="dashboardPopup" class="hidden fixed top-20 right-4 bg-gray-800 border border-gray-600 rounded-lg shadow-lg p-4 w-56 z-50">
   {% if user.is_authenticated %}
-    <h3 class="text-lg font-semibold mb-3">Account Management</h3>
-    <form method="POST" action="{% url 'delete_account' %}">
+    <form method="POST" action="{% url 'logout' %}">
       {% csrf_token %}
-      <p class="text-sm mb-4 text-gray-300">Are you sure you want to delete your account? This cannot be undone.</p>
-      <button type="submit" class="bg-red-600 hover:bg-red-700 w-full py-2 text-white rounded-lg font-semibold transition">Delete My Account</button>
-    </form>
-  {% else %}
-    <h3 class="text-lg font-semibold mb-3">Log in to manage account</h3>
-    <form method="POST" action="{% url 'chatbot:login_and_manage' %}">
-      {% csrf_token %}
-      <input type="text" name="username" placeholder="Username" required class="w-full mb-2 px-4 py-2 rounded bg-gray-700 text-white border border-gray-600 placeholder-gray-400" />
-      <input type="password" name="password" placeholder="Password" required class="w-full mb-4 px-4 py-2 rounded bg-gray-700 text-white border border-gray-600 placeholder-gray-400" />
-      <button type="submit" class="bg-blue-600 hover:bg-blue-700 w-full py-2 text-white rounded-lg font-semibold transition">Log In</button>
+      <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-lg text-sm font-medium text-center">
+        🔓 Sign Out
+      </button>
     </form>
   {% endif %}
 </div>
 
-<!-- Chat Section -->
-<main class="flex-1 px-4 py-4 flex justify-center items-center bg-black overflow-hidden">
-  <div class="w-full max-w-5xl bg-gray-900 rounded-xl p-6 shadow-lg border border-gray-700 h-full overflow-y-auto" id="chat-box">
-    <div class="space-y-4 h-full">
+<!-- Main Section -->
+<main class="flex flex-1 overflow-hidden bg-black text-white">
+  <!-- Left Tips -->
+  <aside class="hidden lg:block w-1/5 bg-gray-900 p-4 border-r border-gray-700">
+    <h2 class="text-base font-bold mb-3">💡 Tips</h2>
+    <ul class="text-[15px] space-y-2 text-gray-300">
+      <li>📌 Ask about class schedules or gen eds</li>
+      <li>💬 “What classes are good for CS sophomores?”</li>
+      <li>📘 “Can I minor in business?”</li>
+      <li>📅 “What’s a balanced semester?”</li>
+    </ul>
+    <h3 class="mt-5 text-base font-semibold text-white">🔍 Common Questions</h3>
+    <ul class="text-[15px] text-gray-300 space-y-2 mt-2">
+      <li>🧠 “How do I choose between electives?”</li>
+      <li>👩‍🎓 “Should I take summer courses?”</li>
+      <li>🧩 “What class fulfills the math requirement?”</li>
+      <li>🎯 “How can I build a schedule with no morning classes?”</li>
+    </ul>
+  </aside>
+
+  <!-- Chatbox -->
+  <section class="flex-1 overflow-y-auto" id="chat-box">
+    <div class="max-w-4xl mx-auto py-6 px-4 space-y-4">
       {% for entry in chat_history %}
         {% if entry.sender == "user" %}
           <div class="flex justify-end">
-            <div class="bg-blue-600 text-white p-3 rounded-lg max-w-[80%] shadow relative">
-              <p>{{ entry.message }}</p>
-              <span class="absolute bottom-1 right-2 text-xs text-gray-300">{{ entry.timestamp }}</span>
+            <div class="bg-blue-600 text-white p-3 rounded-lg max-w-[70%] shadow">
+              <p class="break-words">{{ entry.message }}</p>
+              <span class="timestamp">{{ entry.timestamp }}</span>
             </div>
           </div>
         {% else %}
           <div class="flex justify-start">
-            <div class="bg-gray-700 text-white p-3 rounded-lg max-w-[80%] shadow relative">
-              <div class="typing-message" data-text="{{ entry.message|escapejs }}"></div>
-              <span class="absolute bottom-1 right-2 text-xs text-gray-400">{{ entry.timestamp }}</span>
+            <div class="bg-gray-700 text-white p-3 rounded-lg max-w-[70%] shadow">
+              <div class="typing-message break-words" data-text="{{ entry.message|escapejs }}"></div>
+              <span class="timestamp">{{ entry.timestamp }}</span>
             </div>
           </div>
         {% endif %}
       {% endfor %}
     </div>
-  </div>
+  </section>
+
+  <!-- Right Tips -->
+  <aside class="hidden lg:block w-1/5 bg-gray-900 p-4 border-l border-gray-700">
+    <h2 class="text-base font-bold mb-3">💡 Try Asking</h2>
+    <ul class="text-[15px] space-y-2 text-gray-300">
+      <li>🎓 “Help me schedule gen eds”</li>
+      <li>🛡 “Suggest electives for cybersecurity”</li>
+      <li>🧠 “What is a good AI course plan?”</li>
+      <li>🗓 “Build a schedule around my job”</li>
+    </ul>
+  </aside>
 </main>
 
 <!-- Chat Input -->
 <form method="POST" class="bg-black p-4 border-t border-gray-800">
-  <div class="max-w-5xl mx-auto w-full">
-    <div class="flex flex-col sm:flex-row items-center gap-4 w-full">
-      {% csrf_token %}
-      <input type="text" name="message" placeholder="Type your question..." required class="flex-1 px-4 py-3 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full" />
-      <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition w-full sm:w-auto">Send</button>
-    </div>
+  <div class="max-w-4xl mx-auto flex flex-col sm:flex-row items-center gap-4">
+    {% csrf_token %}
+    <input type="text" name="message" placeholder="Type your question..." required class="flex-1 px-4 py-3 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full" />
+    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition w-full sm:w-auto">Send</button>
   </div>
 </form>
 
 <!-- Scripts -->
 <script>
-  const chatBox = document.querySelector('#chat-box .space-y-4');
-  const undoBtn = document.getElementById("undoBtn");
-  const redoBtn = document.getElementById("redoBtn");
-
-  const undoStack = [];
-  const redoStack = [];
-
   const decodeAll = () => {
     const botMessages = document.querySelectorAll(".typing-message");
     botMessages.forEach((el) => {
@@ -138,34 +133,9 @@
     chatContainer.scrollTop = chatContainer.scrollHeight;
   };
 
-  const saveCurrentState = () => {
-    undoStack.push(chatBox.innerHTML);
-    redoStack.length = 0;
-  };
-
   window.addEventListener("DOMContentLoaded", () => {
     decodeAll();
-    saveCurrentState();
     scrollToBottom();
-  });
-
-  undoBtn.addEventListener("click", () => {
-    if (undoStack.length > 1) {
-      redoStack.push(undoStack.pop());
-      chatBox.innerHTML = undoStack[undoStack.length - 1];
-      decodeAll();
-      scrollToBottom();
-    }
-  });
-
-  redoBtn.addEventListener("click", () => {
-    if (redoStack.length > 0) {
-      const redoState = redoStack.pop();
-      undoStack.push(redoState);
-      chatBox.innerHTML = redoState;
-      decodeAll();
-      scrollToBottom();
-    }
   });
 
   document.getElementById("profileIcon").addEventListener("click", () => {
