@@ -6,6 +6,7 @@ from django.views.decorators.csrf import csrf_protect
 from django.contrib.auth.decorators import login_required
 from .userManagement import UserManagement  # <- Custom class
 import json
+from django.contrib import messages
 
 ADMIN_PASSKEY = "SuperSecretKey123"
 INTEREST_OPTIONS = [
@@ -26,15 +27,17 @@ def home(request):
 
 def login_student(request):
     if request.method == "POST":
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            user = authenticate(username=form.cleaned_data['username'], password=form.cleaned_data['password'])
-            if user:
-                login(request, user)
-                return redirect("/chat")
-    else:
-        form = LoginForm()
-    return render(request, "core/login_student.html", {"form": form})
+        username = request.POST["username"]
+        password = request.POST["password"]
+
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect("chatbot")  # 👈 This should match the name of your chatbot URL
+        else:
+            messages.error(request, "Invalid username or password.")
+
+    return render(request, "core/login_student.html")
 
 def login_admin(request):
     if request.method == "POST":
