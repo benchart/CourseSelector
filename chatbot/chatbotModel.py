@@ -29,7 +29,7 @@ class ChatbotModel:
             return False
 
     management = UserManagement("studentData.txt", "adminData.txt")
-    courseSelector = CourseSelector("courseDatabase.txt")
+    courseSelector = CourseSelector("core/courseDatabase.txt")
     
     #ollama joke generator I found online as testing, but we like it so we'll keep it in
     def get_random_joke(self, prompt: str):
