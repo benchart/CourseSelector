@@ -41,67 +41,75 @@ class CourseSelector:
         - subjectName (list): List of subject names to filter by.
         - username (str): The username of the person making the request (default is 'user1').
         """
-        #pull data from kwargs
         # Pull data from kwargs and ensure proper types
         username = kwargs.get('username', 'user1')
-        catalogueNumMax = kwargs.get('catalogueNumMax', 9999)
-        catalogueNumMin = kwargs.get('catalogueNumMin', 0)
-        creditMax = kwargs.get('creditMax', 5)
-        creditMin = kwargs.get('creditMin', 0)
+        
+        # Handle 'null' values and convert them to None or appropriate default
+        def handle_null(value, default=None):
+            return default if value == 'null' else value
+        
+        catalogueNumMax = handle_null(kwargs.get('catalogueNumMax', 9999), 9999)
+        catalogueNumMin = handle_null(kwargs.get('catalogueNumMin', 0), 0)
+        creditMax = handle_null(kwargs.get('creditMax', 5), 5)
+        creditMin = handle_null(kwargs.get('creditMin', 0), 0)
+        
         class_code = kwargs.get('class_code', '[]')
         instructorName = kwargs.get('instructorName', '[]')
         status = kwargs.get('status', False)  # False is default for student status
         subjectName = kwargs.get('subjectName', '[]')
 
-        # Catch default values in case the AI decides to pass something invalid
-        username = username if username != 'null' else 'user1'
-        catalogueNumMax = int(catalogueNumMax) if catalogueNumMax is not None else 9999
-
-        if(catalogueNumMax == 0):
+        # Convert values to appropriate types
+        try:
+            catalogueNumMax = int(catalogueNumMax) if catalogueNumMax is not None else 9999
+        except ValueError:
             catalogueNumMax = 9999
 
-        catalogueNumMin = int(catalogueNumMin) if catalogueNumMin is not None else 0
-        creditMax = float(creditMax) if creditMax is not None else 5
-
-        if(creditMax == 0):
-            creditMax = 5
-
-        creditMin = float(creditMin) if creditMin is not None else 0
-        instructorName = json.loads(instructorName) if instructorName is not None else []
-        status = status if status is not None else False  # False is default for student status
-        subjectName = json.loads(subjectName) if subjectName is not None else []
-        class_code = json.loads(class_code) if class_code is not None else []
-
-        # Ensure class_code and subjectName are lists (handle string inputs)
-        if isinstance(class_code, str):
-            class_code = json.loads(class_code)
-        if isinstance(subjectName, str):
-            subjectName = json.loads(subjectName)
-
-        # Ensure values are numbers or set defaults
-        if not isinstance(catalogueNumMax, (int, float)):
-            catalogueNumMax = 9999
-        if not isinstance(catalogueNumMin, (int, float)):
+        try:
+            catalogueNumMin = int(catalogueNumMin) if catalogueNumMin is not None else 0
+        except ValueError:
             catalogueNumMin = 0
-        if not isinstance(creditMax, (int, float)):
+
+        try:
+            creditMax = float(creditMax) if creditMax is not None else 5
+        except ValueError:
             creditMax = 5
-        if not isinstance(creditMin, (int, float)):
+
+        try:
+            creditMin = float(creditMin) if creditMin is not None else 0
+        except ValueError:
             creditMin = 0
 
-        # reload course data
+        # Convert class_code and subjectName from string if needed
+        class_code = json.loads(class_code) if isinstance(class_code, str) else class_code
+        subjectName = json.loads(subjectName) if isinstance(subjectName, str) else subjectName
+        instructorName = json.loads(instructorName) if isinstance(instructorName, str) else instructorName
+
+        # Ensure these are lists (if they are passed as strings)
+        if not isinstance(class_code, list):
+            class_code = [class_code]  # If it's a single string, turn it into a list
+        if not isinstance(subjectName, list):
+            subjectName = [subjectName]  # Same here for subjectName
+        if not isinstance(instructorName, list):
+            instructorName = [instructorName]  # Same for instructorName
+
+        # Ensure boolean for status (if it's a string)
+        status = status.lower() == 'true' if isinstance(status, str) else status
+
+        # Reload course data
         self.courseData = self.readCourseList("courseDatabase.txt")
-    
-        #filter by parameters
+        
+        # Filter by parameters
         self.courseData = self._filterByNum('units', creditMin, creditMax)
         self.courseData = self._filterByNum('catalog_number', catalogueNumMin, catalogueNumMax)
         self.courseData = self._filterByType('instructor', instructorName)
         self.courseData = self._filterByType('subject', subjectName)
         self.courseData = self._filterByType('class_code', class_code)
-    
+
         # After filtering based on the provided parameters, find relevant courses by interest
         self.findRelevantCoursesByInterest(username, status)
-    
+        
         return self.courseData
+
 
 
 
