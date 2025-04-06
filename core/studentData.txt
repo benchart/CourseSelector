@@ -1,2 +1,4 @@
 {"name": "Test User", "username": "user1", "password": "1234", "age": 22, "class": "Junior", "credits": 22, "interestIndicies": [15, 19, 21, 24, 30, 46]}
 {"name": "jOHN", "username": "pork", "password": "pork", "age": 8000, "class": "Junior", "credits": 50, "interestIndicies": [15, 19, 21, 24, 30, 46]}
+{"name": "test1", "username": "tester", "password": "123", "age": 18, "class": "Senior", "credits": 24, "interestIndicies": [0, 1, 2]}
+{"name": "123", "username": "123", "password": "123", "age": 123, "class": "Freshman", "credits": 123, "interestIndicies": [18, 14, 10]}
