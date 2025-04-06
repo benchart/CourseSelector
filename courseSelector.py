@@ -119,35 +119,40 @@ class CourseSelector:
         if codeList == [] or [None]:
             return self.courseData
         
-        newCourseList = set()
+        newCourseSet = set()
         try:
             for course in self.courseData:
+                course_tuple = tuple(course.items())
+
                 for code in codeList:
-                    print(code)
                     if(code in course[parameterName]):
-                        newCourseList.add(course)
+                        newCourseSet.add(course_tuple)
                         break
-            print(newCourseList)
-            return list(newCourseList)
+
+            return [dict(course_tuple) for course_tuple in newCourseSet]
+        
         except KeyError:
             print(F"parameter not found: {KeyError}")
 
     #filters classes based on specified num range:
     def _filterByNum(self, filter: str, numMin: float, numMax: float) -> list[dict]:
-        newCourseList = set()
+        newCourseSet = set()
 
         try:
             for course in self.courseData:
                 try:
                     course_value = float(course[filter])
+                    course_tuple = tuple(course.items())
+
                     if course_value is None or not isinstance(course_value, str):
-                        newCourseList.add(course)
+                        newCourseSet.add(course_tuple)
 
                     if course_value >= numMin and course_value <= numMax:
-                        newCourseList.add(course)
+                        newCourseSet.add(course_tuple)
+
                 except ValueError:
                     print(f"Invalid value for {filter}: {course[filter]}. Skipping this course.")
-            return list(newCourseList)
+            return [dict(course_tuple) for course_tuple in newCourseSet]
         
         except KeyError:
             print(F"Error occured: {KeyError}")
