@@ -25,46 +25,51 @@ class CourseSelector:
 
 
     #master filtering function, uses the whole courseData dictionary to provide the most complete course list
-    def filterClassesMaster(self, catalogueNumMax: int, catalogueNumMin: int, class_code: list, creditMax:float, creditMin: float, instructorName: list, status: bool, subjectName: list, username: str = "user1"):
+    def filterClassesMaster(self, catalogueNumMax: int, catalogueNumMin: int, class_code: list, creditMax: float, creditMin: float, instructorName: list, status: bool, subjectName: list, username: str = "user1"):
+        """
+        Master filtering function that filters courses based on multiple parameters
+        such as credits, catalogue numbers, subject, class codes, etc.
         
-        '''
-        This function is used to filter out classes by a variety of parameters
-        Always refer to the default parameters and thier type casting, do not input any NoneType values
-
         Arguments:
-        username: The name of the user. Attempt to extrapolate but if not, resort to 'pork'
-        status: this boolean value indicates whether or not the user is a student or an admin. If true, they are admin. If false, student.
-        creditMin: the minimum number of credits prefered by the user
-        creditMax: the maximum number of credits preferred by the user
-        catalogueNumMin: the lowest catalogue number preferred by the user. Useful for determining if the user wants to take 100 level classes, or nothing lower than 300, for example.
-        catalogueNumMax: the maximum catalogue number preffered by the user. Useful for determining the upper limit of difficulty for classes.
-        instructorName: a list of names of instructors. Usually will be left blank unless specifically requested.
-        subjectName: the list containing the name(s) of the subject the user is looking for.
-        class_code: a list of class codes that the user is requesting.
-
-        Once all of the relevant filtering algorithims have been run, findRelevantCourseByInterest runs in order to find the best suitable match for the student.
-        '''
-
-
+        - catalogueNumMax (int): The maximum catalogue number to filter by.
+        - catalogueNumMin (int): The minimum catalogue number to filter by.
+        - class_code (list): List of class codes to filter by.
+        - creditMax (float): Maximum credits to filter by.
+        - creditMin (float): Minimum credits to filter by.
+        - instructorName (list): List of instructor names to filter by.
+        - status (bool): Whether the user is an admin (True) or a student (False).
+        - subjectName (list): List of subject names to filter by.
+        - username (str): The username of the person making the request (default is 'user1').
+        
+        Returns:
+        - list: A list of courses that match the provided filters.
+        """
+    
+        # Provide default values for parameters that are None
+        username = username if username is not None else "user1"
+        subjectName = subjectName if subjectName is not None else []
+        instructorName = instructorName if instructorName is not None else []
+    
+        # If catalogueNumMax or catalogueNumMin are None, set sensible default limits
         catalogueNumMax = catalogueNumMax if catalogueNumMax is not None else 9999
         catalogueNumMin = catalogueNumMin if catalogueNumMin is not None else 0
-        creditMax = creditMax if creditMax is not None else 5 
-        creditMin = creditMin if creditMin is not None else 0 
-        instructorName = instructorName if instructorName is not None else []
-        status = status if status is not None else False
-        subjectName = subjectName if subjectName is not None else []
-        class_code = class_code if class_code is not None else []
-        if(username != "user1"):
-            username = username
+        creditMax = creditMax if creditMax is not None else 5
+        creditMin = creditMin if creditMin is not None else 0
 
+        # Start with the full list of courses
+        self.courseData = self.readCourseList("courseDatabase.txt")
+    
+        # Apply filters in sequence
         self.courseData = self._filterByNum('units', creditMin, creditMax)
         self.courseData = self._filterByNum('catalog_number', catalogueNumMin, catalogueNumMax)
         self.courseData = self._filterByType('instructor', instructorName)
         self.courseData = self._filterByType('subject', subjectName)
         self.courseData = self._filterByType('class_code', class_code)
-
+    
+        # After filtering based on the provided parameters, find relevant courses by interest
         self.findRelevantCoursesByInterest(username, status)
-
+    
+        return self.courseData
 
 
     #fetches course based on a specified parameter
