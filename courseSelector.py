@@ -30,17 +30,17 @@ class CourseSelector:
                              catalogueNumMin: float = 0, catalogueNumMax: float = 500,
                              instructorName: list = [], subjectName: str = [], 
                              class_code: str = []):
-        self.courseData = self.filterByNum('units', creditMin, creditMax)
-        self.courseData = self.filterByNum('catalog_number', catalogueNumMin, catalogueNumMax)
-        self.courseData = self.filterByType('instructor', instructorName)
-        self.courseData = self.filterByType('subject', subjectName)
-        self.courseData = self.filterByType('class_code', class_code)
+        self.courseData = self._filterByNum('units', creditMin, creditMax)
+        self.courseData = self._filterByNum('catalog_number', catalogueNumMin, catalogueNumMax)
+        self.courseData = self._filterByType('instructor', instructorName)
+        self.courseData = self._filterByType('subject', subjectName)
+        self.courseData = self._filterByType('class_code', class_code)
 
         self.findRelevantCourseByInterest(username, status)
 
 
     #fetches course based on a specified parameter
-    def filterByType(self, parameterName: str, codeList: list) -> list[dict]:
+    def _filterByType(self, parameterName: str, codeList: list) -> list[dict]:
         if codeList == []:
             return self.courseData
         
@@ -57,7 +57,7 @@ class CourseSelector:
             print(F"parameter not found: {KeyError}")
 
     #filters classes based on specified num range:
-    def filterByNum(self, filter: str, numMin: float, numMax: float) -> list[dict]:
+    def _filterByNum(self, filter: str, numMin: float, numMax: float) -> list[dict]:
         newCourseList = []
         try:
             for course in self.courseData:
@@ -71,7 +71,7 @@ class CourseSelector:
     def findRelevantCoursesByInterest(self, username: str, status: bool):
         if(username == ""):
             return []
-        interestList = CourseSelector.matchInterests(UserManagement.findUser(username, status))
+        interestList = CourseSelector._matchInterests(UserManagement.findUser(username, status))
         print(interestList)
 
         message = {'role': 'user', 'content': f'Assume you are an academic advisor. Based on this list of my interests ({interestList}, pick 15 classes from the list of potential classes in json notation ({self.courseData}) and explain why you have selected them. Match your selections as closely as possible to my interests. Make sure you pick exactly 15.)'}
@@ -86,7 +86,7 @@ class CourseSelector:
 
     #returns the matching interests from the interestIndicies list
     @staticmethod
-    def matchInterests(user: dict) -> list:
+    def _matchInterests(user: dict) -> list:
         interestList: list = []
         try:
             for index in user['interestIndicies']:

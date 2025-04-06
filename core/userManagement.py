@@ -10,7 +10,7 @@ class UserManagement:
 
     # Reads through the file to prevent adding duplicates
     @staticmethod
-    def determineDuplicate(filepath: str, search_data: dict) -> bool:
+    def _determineDuplicate(filepath: str, search_data: dict) -> bool:
         try:
             with open(filepath, 'r') as file:
                 lines = file.readlines()
@@ -43,7 +43,7 @@ class UserManagement:
             "interestIndicies": interestIndicies
         }
 
-        if UserManagement.determineDuplicate(UserManagement.studentFilepath, data):
+        if UserManagement._determineDuplicate(UserManagement.studentFilepath, data):
             try:
                 with open(UserManagement.studentFilepath, "a") as file:
                     file.write(json.dumps(data) + "\n")
@@ -61,7 +61,7 @@ class UserManagement:
             "admin key": adminPasskey
         }
 
-        if UserManagement.determineDuplicate(UserManagement.adminFilepath, data):
+        if UserManagement._determineDuplicate(UserManagement.adminFilepath, data):
             try:
                 with open(UserManagement.adminFilepath, "a") as file:
                     file.write(json.dumps(data) + "\n")
@@ -71,7 +71,7 @@ class UserManagement:
 
     # Returns a student JSON string
     @staticmethod
-    def readStudent(username: str, studentPath: str) -> dict:
+    def _readStudent(username: str, studentPath: str) -> dict:
         try:
             with open(studentPath, 'r') as file:
                 lines = file.readlines()
@@ -92,7 +92,7 @@ class UserManagement:
 
     # Returns an admin JSON string
     @staticmethod
-    def readAdmin(username: str, adminPath: str) -> dict:
+    def _readAdmin(username: str, adminPath: str) -> dict:
         try:
             with open(adminPath, 'r') as file:
                 lines = file.readlines()
@@ -115,6 +115,6 @@ class UserManagement:
     @staticmethod
     def findUser(user: str, userType: bool) -> dict:
         if userType:
-            return UserManagement.readAdmin(user, UserManagement.adminFilepath)
+            return UserManagement._readAdmin(user, UserManagement.adminFilepath)
         else:
-            return UserManagement.readStudent(user, UserManagement.studentFilepath)
+            return UserManagement._readStudent(user, UserManagement.studentFilepath)
