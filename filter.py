@@ -7,17 +7,17 @@ class Filter:
     #courseModel.findCourseByParameter("courseDatabase.txt")
     #courseModel.getByClassCode(["PHIL-51184", "HON-41049"])
     #courseModel.getByType("name", ["Art History in Biology", "Opera in Biology"])
-    # courseModel.filterClassesMaster(
-    #     catalogueNumMax=None, 
-    #     catalogueNumMin=None, 
-    #     class_code=None, 
-    #     creditMax=None, 
-    #     creditMin=None, 
-    #     instructorName=None, 
-    #     status=False, 
-    #     subjectName=None, 
-    #     username='null'
-    # )
+    courseModel.filterClassesMaster(
+        catalogueNumMax=None, 
+        catalogueNumMin=None, 
+        class_code=None, 
+        creditMax=None, 
+        creditMin=None, 
+        instructorName=None, 
+        status=False, 
+        subjectName=None, 
+        username='null'
+    )
 
     
     model = ChatbotModel()
@@ -25,7 +25,7 @@ class Filter:
 # model.callChatbot("tell me another funny joke")
 #model.callChatbot("please tell me the descriptions of all of the courses")
 # model.callChatbot("hello george")
-    model.callChatbot("what classes should I take if I don't want any morning classes")
+   # model.callChatbot("what classes should I take if I don't want any morning classes")
 
     userSystem = UserManagement("studentData.txt", "adminData.txt")
     # userSystem.createNewStudent("Parley Hartwell", "phartwell", 19, "Freshman", 18, [1,6,7,10,100,23])

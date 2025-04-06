@@ -29,7 +29,7 @@ class CourseSelector:
         """
         Master filtering function that filters courses based on multiple parameters
         such as credits, catalogue numbers, subject, class codes, etc.
-        
+
         Arguments (now passed as keyword arguments):
         - catalogueNumMax (int): The maximum catalogue number to filter by.
         - catalogueNumMin (int): The minimum catalogue number to filter by.
@@ -43,20 +43,20 @@ class CourseSelector:
         """
         # Pull data from kwargs and ensure proper types
         username = kwargs.get('username', 'user1')
-        
+
         # Handle 'null' values and convert them to None or appropriate default
         def handle_null(value, default=None):
-            return default if value == 'null' else value
-        
+            return default if value == 'null' or value is None else value
+
         catalogueNumMax = handle_null(kwargs.get('catalogueNumMax', 9999), 9999)
         catalogueNumMin = handle_null(kwargs.get('catalogueNumMin', 0), 0)
         creditMax = handle_null(kwargs.get('creditMax', 5), 5)
         creditMin = handle_null(kwargs.get('creditMin', 0), 0)
-        
-        class_code = kwargs.get('class_code', '[]')
-        instructorName = kwargs.get('instructorName', '[]')
+
+        class_code = kwargs.get('class_code', [])
+        instructorName = kwargs.get('instructorName', [])
         status = kwargs.get('status', False)  # False is default for student status
-        subjectName = kwargs.get('subjectName', '[]')
+        subjectName = kwargs.get('subjectName', [])
 
         # Convert values to appropriate types
         try:
@@ -79,7 +79,7 @@ class CourseSelector:
         except ValueError:
             creditMin = 0
 
-        # Convert class_code and subjectName from string if needed
+        # Ensure class_code and subjectName are lists, even if they are passed as strings
         class_code = json.loads(class_code) if isinstance(class_code, str) else class_code
         subjectName = json.loads(subjectName) if isinstance(subjectName, str) else subjectName
         instructorName = json.loads(instructorName) if isinstance(instructorName, str) else instructorName
@@ -97,7 +97,7 @@ class CourseSelector:
 
         # Reload course data
         self.courseData = self.readCourseList("courseDatabase.txt")
-        
+
         # Filter by parameters
         self.courseData = self._filterByNum('units', creditMin, creditMax)
         self.courseData = self._filterByNum('catalog_number', catalogueNumMin, catalogueNumMax)
@@ -107,8 +107,9 @@ class CourseSelector:
 
         # After filtering based on the provided parameters, find relevant courses by interest
         self.findRelevantCoursesByInterest(username, status)
-        
+
         return self.courseData
+
 
 
 
@@ -155,6 +156,8 @@ class CourseSelector:
             return []
         
         interestList = CourseSelector._matchInterests(UserManagement.findUser(username, status))
+        print(f"Interest List: {interestList}")
+
 
         message = {
             'role': 'user', 
