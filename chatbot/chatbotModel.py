@@ -3,12 +3,30 @@ import requests
 import logging
 from core.userManagement import UserManagement
 from courseSelector import CourseSelector
+import os
+import ollama
+
+# If you need to use a custom port
+os.environ["OLLAMA_HOST"] = "http://localhost:11434"
+
 
 #if you want to see logging, uncomment
 #logging.basicConfig(level=logging.INFO,
                     #format='%(asctime)s - %(levelname)s - %(message)s')
 
 class ChatbotModel:
+
+    def __init__(self):
+        self.management = UserManagement("studentData.txt", "adminData.txt")
+        self.courseSelector = CourseSelector("courseDatabase.txt")
+
+    @staticmethod
+    def is_ollama_running():
+        try:
+            r = requests.get("http://localhost:11434")
+            return r.status_code == 200
+        except:
+            return False
 
     management = UserManagement("studentData.txt", "adminData.txt")
     courseSelector = CourseSelector("courseDatabase.txt")
@@ -56,12 +74,23 @@ class ChatbotModel:
         return ''.join(response_content)
 
     #used for execution of chatbot commands
-    def callChatbot(self, prompt: str):
-        response = ollama.chat('llama3.2', messages=[
-            {'role': 'user', 'content': prompt}],
-            tools=[self.get_random_joke, self.does_not_match, self.management.findUser, self.courseSelector.filterClassesMaster]
-        )
-        print(response)
+
+    def callChatbot(self, prompt: str) -> str:
+        try:
+            response = ollama.chat(
+                model='llama3.2',
+                messages=[{"role": "user", "content": prompt}],
+                tools=[
+                    self.get_random_joke,
+                    self.does_not_match,
+                    self.management.findUser,
+                    self.courseSelector.filterClassesMaster
+                ]
+            )
+        except Exception as e:
+            print("❌ Ollama call error:", e)
+            return "❌ Internal server error — check terminal for details."
+
         available_functions = {
             'get_random_joke': self.get_random_joke,
             'does_not_match': self.does_not_match,
@@ -69,19 +98,135 @@ class ChatbotModel:
             'filterClassesMaster': self.courseSelector.filterClassesMaster
         }
 
+        result = ""
+
         if response.message.tool_calls:
             for tool in response.message.tool_calls or []:
                 function_to_call = available_functions.get(tool.function.name)
                 if function_to_call:
-                    
-                    # Ensure we pass default or empty arguments when none are provided
-                    args = tool.function.arguments if tool.function.arguments else {}
-
                     try:
-                        print('Function Output', function_to_call(**args) + "\n")
+                        args = tool.function.arguments or {}
+                        function_output = function_to_call(**args)
+                        result += f"{function_output}\n"
                     except Exception as e:
-                        print(f"Error calling function {tool.function.name}: {e}")
+                        result += f"⚠️ Error calling `{tool.function.name}`: {e}\n"
                 else:
-                    print('Function not found:', tool.function.name + "\n")
+                    result += f"❓ Unknown tool: {tool.function.name}\n"
         else:
-            logging.warning("No valid tool was called. This could be because the input was not understood.\n")
+            result = response.message.content  # Fallback to assistant's actual message
+
+        return result
+    
+
+
+
+
+    # def callChatbot(self, prompt: str):
+        
+    #     try:
+    #         response = ollama.chat(
+    #             model='llama3.2',
+    #             messages=[{'role': 'user', 'content': prompt}],
+    #             tools=[
+    #                 self.get_random_joke,
+    #                 self.does_not_match,
+    #                 self.management.findUser,
+    #                 self.courseSelector.filterClassesMaster
+    #             ]
+    #             # temperature=0.2,
+    #             # system="You are a helpful assistant that helps students plan their class schedule.",
+    #             # top_p=0.95,
+    #             # repeat_penalty=1.1,
+    #         )
+    #     except Exception as e:
+    #         print("❌ ERROR calling ollama.chat:", e)
+    #         return "❌ Internal server error — check terminal for details."
+        
+    #     response = ollama.chat(
+    #         model='llama3.2',
+    #         messages=[{'role': 'user', 'content': prompt}],
+    #         tools=[
+    #             self.get_random_joke,
+    #             self.does_not_match,
+    #             self.management.findUser,
+    #             self.courseSelector.filterClassesMaster
+    #         ],
+    #         temperature=0.2,
+    #         system="You are a helpful assistant that helps students plan their class schedule.",
+    #         top_p=0.95,
+    #         repeat_penalty=1.1,
+    #     )
+
+    #     print(response)
+
+    #     available_functions = {
+    #         'get_random_joke': self.get_random_joke,
+    #         'does_not_match': self.does_not_match,
+    #         'findUser': self.management.findUser,
+    #         'filterClassesMaster': self.courseSelector.filterClassesMaster
+    #     }
+
+    #     result = ""
+
+    #     if response.message.tool_calls:
+    #         for tool in response.message.tool_calls or []:
+    #             function_to_call = available_functions.get(tool.function.name)
+    #             if function_to_call:
+    #                 try:
+    #                     args = tool.function.arguments or {}
+    #                     function_output = function_to_call(**args)
+    #                     result += f"🛠 Tool `{tool.function.name}` responded: {function_output}\n"
+    #                 except Exception as e:
+    #                     result += f"⚠️ Error calling `{tool.function.name}`: {e}\n"
+    #             else:
+    #                 result += f"❓ Unknown tool: {tool.function.name}\n"
+    #     else:
+    #         result = response.message.content  # Fallback to assistant's actual message
+
+    #     return result
+
+    # def callChatbot(self, prompt: str):
+    #     #if not self.is_ollama_running():
+    #     #    return "⚠️ Ollama is not running. Please open a terminal and type: <code>ollama run llama3.2</code>"
+
+    #     response = ollama.chat(
+    #         model='llama3.2',
+    #         messages=[{'role': 'user', 'content': prompt}],
+    #         tools=[
+    #             self.get_random_joke,
+    #             self.does_not_match,
+    #             self.management.findUser,
+    #             self.courseSelector.filterClassesMaster
+    #         ],
+    #         temperature=0.2,
+    #         system="You are a helpful assistant that helps students plan their class schedule.",
+    #         top_p=0.95,
+    #         repeat_penalty=1.1,
+    #     )
+
+    #     print(response)
+    #     available_functions = {
+    #         'get_random_joke': self.get_random_joke,
+    #         'does_not_match': self.does_not_match,
+    #         'findUser': self.management.findUser,
+    #         'filterClassesMaster': self.courseSelector.filterClassesMaster
+    #     }
+
+    #     # return response['message']['content']
+
+    #     if response.message.tool_calls:
+    #         for tool in response.message.tool_calls or []:
+    #             function_to_call = available_functions.get(tool.function.name)
+    #             if function_to_call:
+                    
+    #                 # Ensure we pass default or empty arguments when none are provided
+    #                 args = tool.function.arguments if tool.function.arguments else {}
+
+    #                 try:
+    #                     print('Function Output', function_to_call(**args) + "\n")
+    #                 except Exception as e:
+    #                     print(f"Error calling function {tool.function.name}: {e}")
+    #             else:
+    #                 print('Function not found:', tool.function.name + "\n")
+    #     else:
+    #         logging.warning("No valid tool was called. This could be because the input was not understood.\n")
