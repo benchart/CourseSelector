@@ -42,34 +42,35 @@ class CourseSelector:
         - username (str): The username of the person making the request (default is 'user1').
         """
         #pull data from kwargs
-        username = kwargs.get('username', 'user1') or 'user1'
-        subjectName = kwargs.get('subjectName', [])
-        instructorName = kwargs.get('instructorName', [])
-        
+        # Pull data from kwargs and ensure proper types
+        username = kwargs.get('username', 'user1')
         catalogueNumMax = kwargs.get('catalogueNumMax', 9999)
         catalogueNumMin = kwargs.get('catalogueNumMin', 0)
         creditMax = kwargs.get('creditMax', 5)
         creditMin = kwargs.get('creditMin', 0)
-        class_code = kwargs.get('class_code', [])
+        class_code = kwargs.get('class_code', '[]')
+        instructorName = kwargs.get('instructorName', '[]')
+        status = kwargs.get('status', False)  # False is default for student status
+        subjectName = kwargs.get('subjectName', '[]')
 
         # Catch default values in case the AI decides to pass something invalid
         username = username if username != 'null' else 'user1'
-        catalogueNumMax = catalogueNumMax if catalogueNumMax is not None else 9999
-        
+        catalogueNumMax = int(catalogueNumMax) if catalogueNumMax is not None else 9999
+
         if(catalogueNumMax == 0):
             catalogueNumMax = 9999
 
-        catalogueNumMin = catalogueNumMin if catalogueNumMin is not None else 0
-        creditMax = creditMax if creditMax is not None else 5
+        catalogueNumMin = int(catalogueNumMin) if catalogueNumMin is not None else 0
+        creditMax = float(creditMax) if creditMax is not None else 5
 
         if(creditMax == 0):
             creditMax = 5
 
-        creditMin = creditMin if creditMin is not None else 0
-        instructorName = instructorName if instructorName is not None else []
-        status = kwargs.get('status', False)  # False is default for student status
-        subjectName = subjectName if subjectName is not None else []
-        class_code = class_code if class_code is not None else []
+        creditMin = float(creditMin) if creditMin is not None else 0
+        instructorName = json.loads(instructorName) if instructorName is not None else []
+        status = status if status is not None else False  # False is default for student status
+        subjectName = json.loads(subjectName) if subjectName is not None else []
+        class_code = json.loads(class_code) if class_code is not None else []
 
         # Ensure class_code and subjectName are lists (handle string inputs)
         if isinstance(class_code, str):
