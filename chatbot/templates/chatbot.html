@@ -20,34 +20,20 @@
 <!-- Header -->
 <header class="px-6 py-4 border-b border-gray-700 bg-black relative">
   <div class="flex justify-between items-center w-full">
-    <a href="{% url 'home' %}" class="text-white bg-gray-700 hover:bg-gray-600 font-medium px-5 py-2 rounded-lg shadow transition flex items-center gap-2">
+    <!-- Updated Back Button renamed to "Sign Out" and styled red -->
+    <a href="{% url 'home' %}" class="text-white bg-red-700 hover:bg-red-800 font-medium px-5 py-2 rounded-lg shadow transition flex items-center gap-2">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
       </svg>
-      Back
+      Sign Out
     </a>
     <h1 class="absolute left-1/2 transform -translate-x-1/2 text-2xl font-bold text-center">
       Smart Course Chatbot
     </h1>
-    <button id="profileIcon" class="hover:text-blue-400 transition" title="Account Options">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A4 4 0 019 16h6a4 4 0 013.879 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-      </svg>
-    </button>
+    <!-- Removed profile icon -->
+    <div></div>
   </div>
 </header>
-
-<!-- Profile Dropdown -->
-<div id="dashboardPopup" class="hidden fixed top-20 right-4 bg-gray-800 border border-gray-600 rounded-lg shadow-lg p-4 w-56 z-50">
-  {% if user.is_authenticated %}
-    <form method="POST" action="{% url 'logout' %}">
-      {% csrf_token %}
-      <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-lg text-sm font-medium text-center">
-        🔓 Sign Out
-      </button>
-    </form>
-  {% endif %}
-</div>
 
 <!-- Main Section -->
 <main class="flex flex-1 overflow-hidden bg-black text-white">
@@ -137,19 +123,7 @@
     decodeAll();
     scrollToBottom();
   });
-
-  document.getElementById("profileIcon").addEventListener("click", () => {
-    const popup = document.getElementById("dashboardPopup");
-    popup.classList.toggle("hidden");
-  });
-
-  document.addEventListener("click", (event) => {
-    const popup = document.getElementById("dashboardPopup");
-    const icon = document.getElementById("profileIcon");
-    if (!popup.contains(event.target) && !icon.contains(event.target)) {
-      popup.classList.add("hidden");
-    }
-  });
 </script>
+
 </body>
 </html>

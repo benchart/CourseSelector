@@ -89,6 +89,3 @@ def login_and_manage(request):
         return redirect("chatbot:chatbot")
     return redirect("chatbot:chatbot")
 
-def logout_view(request):
-    logout(request)
-    return redirect('home')
