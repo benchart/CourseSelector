@@ -73,8 +73,13 @@ class ChatbotModel:
             for tool in response.message.tool_calls or []:
                 function_to_call = available_functions.get(tool.function.name)
                 if function_to_call:
-                    print('Function Output', function_to_call(**tool.function.arguments)+"\n")
+                    # Ensure we pass default or empty arguments when none are provided
+                    args = tool.function.arguments if tool.function.arguments else {}
+                    try:
+                        print('Function Output', function_to_call(**args) + "\n")
+                    except Exception as e:
+                        print(f"Error calling function {tool.function.name}: {e}")
                 else:
-                    print('Function not found:', tool.function.name+"\n")
+                    print('Function not found:', tool.function.name + "\n")
         else:
             logging.warning("No valid tool was called. This could be because the input was not understood.\n")
