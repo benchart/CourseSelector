@@ -5,36 +5,46 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Smart Course Chatbot</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    #toast {
+      position: fixed;
+      top: 1rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #22c55e;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 0.5rem;
+      display: none;
+      z-index: 1000;
+    }
+  </style>
 </head>
 <body class="bg-black text-white h-screen flex flex-col overflow-hidden">
+
+<div id="toast"></div>
 
 <!-- Header -->
 <header class="px-6 py-4 border-b border-gray-700 bg-black relative">
   <div class="flex justify-between items-center w-full">
-    <!-- Back Button -->
     <a href="{% url 'home' %}" class="text-white bg-gray-700 hover:bg-gray-600 font-medium px-5 py-2 rounded-lg shadow transition flex items-center gap-2">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
       </svg>
       Back
     </a>
-
-    <!-- Title centered across screen -->
     <h1 class="absolute left-1/2 transform -translate-x-1/2 text-2xl font-bold text-center">
       Smart Course Chatbot
     </h1>
-
-    <!-- Profile Icon -->
     <button id="profileIcon" class="hover:text-blue-400 transition" title="Account Options">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M5.121 17.804A4 4 0 019 16h6a4 4 0 013.879 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A4 4 0 019 16h6a4 4 0 013.879 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
       </svg>
     </button>
   </div>
 </header>
 
-<!-- Undo/Redo Buttons BELOW the divider -->
+<!-- Control Buttons -->
 <div class="flex justify-center items-center gap-4 py-4 bg-black">
   <button id="restoreBtn" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition">
     ⟲ Undo Clear
@@ -43,158 +53,193 @@
   <button id="redoBtn" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition">
     ↻ Redo Clear
   </button>
+  <div class="w-px h-6 bg-gray-500"></div>
+  <button id="resetBtn" class="bg-red-800 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition">
+    🔄 Reset Everything
+  </button>
+  <div class="w-px h-6 bg-gray-500"></div>
+  <button id="historyRestoreBtn" class="bg-blue-700 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition">
+    💬 Restore Past Chat
+  </button>
 </div>
 
+<!-- Profile Dropdown (guest login/signup or account delete) -->
+<div id="dashboardPopup" class="hidden fixed top-20 right-4 bg-gray-800 border border-gray-600 rounded-lg shadow-lg p-6 w-80 z-50">
+  {% if user.is_authenticated %}
+    <h3 class="text-lg font-semibold mb-3">Account Management</h3>
+    <form method="POST" action="{% url 'delete_account' %}">
+      {% csrf_token %}
+      <p class="text-sm mb-4 text-gray-300">Are you sure you want to delete your account? This cannot be undone.</p>
+      <button type="submit" class="bg-red-600 hover:bg-red-700 w-full py-2 text-white rounded-lg font-semibold transition">Delete My Account</button>
+    </form>
+  {% else %}
+    <h3 class="text-lg font-semibold mb-3">Log in to manage account</h3>
+    <form method="POST" action="{% url 'chatbot:login_and_manage' %}">
+      {% csrf_token %}
+      <input type="text" name="username" placeholder="Username" required class="w-full mb-2 px-4 py-2 rounded bg-gray-700 text-white border border-gray-600 placeholder-gray-400" />
+      <input type="password" name="password" placeholder="Password" required class="w-full mb-4 px-4 py-2 rounded bg-gray-700 text-white border border-gray-600 placeholder-gray-400" />
+      <button type="submit" class="bg-blue-600 hover:bg-blue-700 w-full py-2 text-white rounded-lg font-semibold transition">Log In</button>
+    </form>
+  {% endif %}
+</div>
 
-  <!-- Profile Dropdown (guest login/signup or account delete) -->
-  <div id="dashboardPopup" class="hidden fixed top-20 right-4 bg-gray-800 border border-gray-600 rounded-lg shadow-lg p-6 w-80 z-50">
-    {% if user.is_authenticated %}
-      <h3 class="text-lg font-semibold mb-3">Account Management</h3>
-      <form method="POST" action="{% url 'delete_account' %}">
-        {% csrf_token %}
-        <p class="text-sm mb-4 text-gray-300">Are you sure you want to delete your account? This cannot be undone.</p>
-        <button type="submit"
-          class="bg-red-600 hover:bg-red-700 w-full py-2 text-white rounded-lg font-semibold transition">
-          Delete My Account
-        </button>
-      </form>
-    {% else %}
-      <h3 class="text-lg font-semibold mb-3">Log in to manage account</h3>
-      <form method="POST" action="{% url 'chatbot:login_and_manage' %}">
-        {% csrf_token %}
-        <input type="text" name="username" placeholder="Username" required
-               class="w-full mb-2 px-4 py-2 rounded bg-gray-700 text-white border border-gray-600 placeholder-gray-400" />
-        <input type="password" name="password" placeholder="Password" required
-               class="w-full mb-4 px-4 py-2 rounded bg-gray-700 text-white border border-gray-600 placeholder-gray-400" />
-        <button type="submit"
-                class="bg-blue-600 hover:bg-blue-700 w-full py-2 text-white rounded-lg font-semibold transition">
-          Log In
-        </button>
-      </form>
-    {% endif %}
-  </div>
-
-  <!-- Chat Section -->
-  <main class="flex-1 px-4 py-4 flex justify-center items-center bg-black overflow-hidden">
-    <div class="w-full max-w-5xl bg-gray-900 rounded-xl p-6 shadow-lg border border-gray-700 h-full overflow-y-auto" id="chat-box">
-      <div class="space-y-4 h-full">
-        {% for entry in chat_history %}
-          {% if entry.sender == "user" %}
-            <div class="flex justify-end">
-              <div class="bg-blue-600 text-white p-3 rounded-lg max-w-[80%] shadow relative">
-                <p>{{ entry.message }}</p>
-                <span class="absolute bottom-1 right-2 text-xs text-gray-300">{{ entry.timestamp }}</span>
-              </div>
+<!-- Chat Section -->
+<main class="flex-1 px-4 py-4 flex justify-center items-center bg-black overflow-hidden">
+  <div class="w-full max-w-5xl bg-gray-900 rounded-xl p-6 shadow-lg border border-gray-700 h-full overflow-y-auto" id="chat-box">
+    <div class="space-y-4 h-full">
+      {% for entry in chat_history %}
+        {% if entry.sender == "user" %}
+          <div class="flex justify-end">
+            <div class="bg-blue-600 text-white p-3 rounded-lg max-w-[80%] shadow relative">
+              <p>{{ entry.message }}</p>
+              <span class="absolute bottom-1 right-2 text-xs text-gray-300">{{ entry.timestamp }}</span>
             </div>
-          {% else %}
-            <div class="flex justify-start">
-              <div class="bg-gray-700 text-white p-3 rounded-lg max-w-[80%] shadow relative">
-                <div class="typing-message" data-text="{{ entry.message|escapejs }}"></div>
-                <span class="absolute bottom-1 right-2 text-xs text-gray-400">{{ entry.timestamp }}</span>
-              </div>
-            </div>
-          {% endif %}
-        {% endfor %}
-      </div>
-    </div>
-  </main>
-
-  <!-- Chat Input -->
-  <form method="POST" class="bg-black p-4 border-t border-gray-800">
-    <div class="max-w-5xl mx-auto w-full">
-      <div class="flex flex-col sm:flex-row items-center gap-4 w-full">
-        {% csrf_token %}
-        <input
-          type="text"
-          name="message"
-          placeholder="Type your question..."
-          required
-          class="flex-1 px-4 py-3 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
-        />
-        <button type="submit"
-                class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition w-full sm:w-auto">
-          Send
-        </button>
-        <button type="button" id="clearBtn"
-                class="bg-red-700 hover:bg-red-800 text-white px-6 py-3 rounded-lg transition w-full sm:w-auto">
-          Clear
-        </button>
-      </div>
-    </div>
-  </form>
-
-  <!-- Scripts -->
-  <script>
-    const chatBox = document.getElementById('chat-box').querySelector('.space-y-4');
-    const inputBox = document.querySelector("input[name='message']");
-    const restoreBtn = document.getElementById("restoreBtn");
-    const redoBtn = document.getElementById("redoBtn");
-    const clearedHistory = [];
-    const redoHistory = [];
-
-    window.addEventListener("DOMContentLoaded", () => {
-      const greeting = document.createElement("div");
-      greeting.innerHTML = `
-        <div class="flex justify-start">
-          <div class="bg-gray-700 text-white p-3 rounded-lg max-w-[80%] shadow relative">
-            <p>Hello there! 👋 What can I help you with today?</p>
           </div>
-        </div>
-      `;
-      chatBox.appendChild(greeting);
+        {% else %}
+          <div class="flex justify-start">
+            <div class="bg-gray-700 text-white p-3 rounded-lg max-w-[80%] shadow relative">
+              <div class="typing-message" data-text="{{ entry.message|escapejs }}"></div>
+              <span class="absolute bottom-1 right-2 text-xs text-gray-400">{{ entry.timestamp }}</span>
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</main>
 
-      const box = document.getElementById("chat-box");
-      box.scrollTop = box.scrollHeight;
+<!-- Chat Input -->
+<form method="POST" class="bg-black p-4 border-t border-gray-800">
+  <div class="max-w-5xl mx-auto w-full">
+    <div class="flex flex-col sm:flex-row items-center gap-4 w-full">
+      {% csrf_token %}
+      <input type="text" name="message" placeholder="Type your question..." required class="flex-1 px-4 py-3 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full" />
+      <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition w-full sm:w-auto">Send</button>
+      <button type="button" id="clearBtn" class="bg-red-700 hover:bg-red-800 text-white px-6 py-3 rounded-lg transition w-full sm:w-auto">Clear</button>
+    </div>
+  </div>
+</form>
 
-      const botMessages = document.querySelectorAll(".typing-message");
-      botMessages.forEach((el) => {
-        const raw = el.getAttribute("data-text");
-        try {
-          const decoded = JSON.parse(`"${raw}"`);
-          el.textContent = decoded;
-        } catch {
-          el.textContent = raw;
-        }
-      });
-    });
+<script>
+  const showToast = (message) => {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.style.display = 'block';
+    setTimeout(() => {
+      toast.style.display = 'none';
+    }, 2500);
+  };
 
-    document.getElementById("clearBtn").addEventListener("click", () => {
-      if (chatBox.innerHTML.trim() !== "") {
-        clearedHistory.push(chatBox.innerHTML);
-        redoHistory.length = 0;
-        chatBox.innerHTML = "";
+  const getIndianaTime = () => {
+    const now = new Date();
+    return new Intl.DateTimeFormat('en-US', {
+      timeZone: 'America/Indiana/Indianapolis',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: true
+    }).format(now);
+  };
+</script>
+
+<script>
+  const chatBox = document.getElementById('chat-box').querySelector('.space-y-4');
+  const inputBox = document.querySelector("input[name='message']");
+  const restoreBtn = document.getElementById("restoreBtn");
+  const redoBtn = document.getElementById("redoBtn");
+  const resetBtn = document.getElementById("resetBtn");
+  const historyRestoreBtn = document.getElementById("historyRestoreBtn");
+  const clearedHistory = [];
+  const redoHistory = [];
+
+  const saveChatToLocal = () => {
+    localStorage.setItem("chatBackup", chatBox.innerHTML);
+  };
+
+  const restoreLocalChat = () => {
+    const saved = localStorage.getItem("chatBackup");
+    if (saved) {
+      chatBox.innerHTML = saved;
+      decodeAll();
+      showToast("Previous chat restored!");
+    }
+  };
+
+  const decodeAll = () => {
+    const botMessages = document.querySelectorAll(".typing-message");
+    botMessages.forEach((el) => {
+      const raw = el.getAttribute("data-text");
+      try {
+        const decoded = JSON.parse(`"${raw}"`).replace(/\*/g, ",");
+        el.textContent = decoded;
+      } catch {
+        el.textContent = raw.replace(/\*/g, ",");
       }
-      inputBox.value = "";
     });
+  };
 
-    restoreBtn.addEventListener("click", () => {
-      if (clearedHistory.length > 0) {
-        const last = clearedHistory.pop();
-        redoHistory.push(chatBox.innerHTML);
-        chatBox.innerHTML = last;
-      }
-    });
+  window.addEventListener("DOMContentLoaded", () => {
+    localStorage.setItem("chatBackup", document.querySelector(".space-y-4").innerHTML);
+    chatBox.innerHTML = "";
+  });
 
-    redoBtn.addEventListener("click", () => {
-      if (redoHistory.length > 0) {
-        const redo = redoHistory.pop();
-        clearedHistory.push(chatBox.innerHTML);
-        chatBox.innerHTML = redo;
-      }
-    });
+  document.getElementById("clearBtn").addEventListener("click", () => {
+    if (chatBox.innerHTML.trim() !== "") {
+      clearedHistory.push(chatBox.innerHTML);
+      redoHistory.length = 0;
+      chatBox.innerHTML = "";
+    }
+    inputBox.value = "";
+    saveChatToLocal();
+  });
 
-    document.getElementById("profileIcon").addEventListener("click", () => {
-      const popup = document.getElementById("dashboardPopup");
-      popup.classList.toggle("hidden");
-    });
+  restoreBtn.addEventListener("click", () => {
+    if (clearedHistory.length > 0) {
+      const last = clearedHistory.pop();
+      redoHistory.push(chatBox.innerHTML);
+      chatBox.innerHTML = last;
+      decodeAll();
+      saveChatToLocal();
+      showToast("Chat restored at " + getIndianaTime());
+    }
+  });
 
-    document.addEventListener("click", (event) => {
-      const popup = document.getElementById("dashboardPopup");
-      const icon = document.getElementById("profileIcon");
-      if (!popup.contains(event.target) && !icon.contains(event.target)) {
-        popup.classList.add("hidden");
-      }
-    });
-  </script>
+  redoBtn.addEventListener("click", () => {
+    if (redoHistory.length > 0) {
+      const redo = redoHistory.pop();
+      clearedHistory.push(chatBox.innerHTML);
+      chatBox.innerHTML = redo;
+      decodeAll();
+      saveChatToLocal();
+      showToast("Redo successful at " + getIndianaTime());
+    }
+  });
+
+  resetBtn.addEventListener("click", () => {
+    localStorage.removeItem("chatBackup");
+    clearedHistory.length = 0;
+    redoHistory.length = 0;
+    chatBox.innerHTML = "";
+    inputBox.value = "";
+    showToast("Reset complete at " + getIndianaTime());
+  });
+
+  historyRestoreBtn.addEventListener("click", () => {
+    restoreLocalChat();
+  });
+
+  document.getElementById("profileIcon").addEventListener("click", () => {
+    const popup = document.getElementById("dashboardPopup");
+    popup.classList.toggle("hidden");
+  });
+
+  document.addEventListener("click", (event) => {
+    const popup = document.getElementById("dashboardPopup");
+    const icon = document.getElementById("profileIcon");
+    if (!popup.contains(event.target) && !icon.contains(event.target)) {
+      popup.classList.add("hidden");
+    }
+  });
+</script>
 </body>
 </html>
