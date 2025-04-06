@@ -6,16 +6,23 @@
   <title>Smart Course Chatbot</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-900 text-white min-h-screen flex flex-col relative">
+<body class="bg-black text-white h-screen flex flex-col overflow-hidden">
 
-  <!-- Header with Back and Profile -->
-  <header class="flex justify-between items-center px-6 py-4 border-b border-gray-700 bg-gray-900">
+<!-- Header -->
+<header class="px-6 py-4 border-b border-gray-700 bg-black relative">
+  <div class="flex justify-between items-center w-full">
     <!-- Back Button -->
-    <a href="{% url 'home' %}" class="text-white bg-gray-700 hover:bg-gray-600 font-medium px-5 py-2 rounded-lg shadow transition">
+    <a href="{% url 'home' %}" class="text-white bg-gray-700 hover:bg-gray-600 font-medium px-5 py-2 rounded-lg shadow transition flex items-center gap-2">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+      </svg>
       Back
     </a>
 
-    <h1 class="text-2xl font-bold text-center">Smart Course Chatbot</h1>
+    <!-- Title centered across screen -->
+    <h1 class="absolute left-1/2 transform -translate-x-1/2 text-2xl font-bold text-center">
+      Smart Course Chatbot
+    </h1>
 
     <!-- Profile Icon -->
     <button id="profileIcon" class="hover:text-blue-400 transition" title="Account Options">
@@ -24,9 +31,22 @@
               d="M5.121 17.804A4 4 0 019 16h6a4 4 0 013.879 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
       </svg>
     </button>
-  </header>
+  </div>
+</header>
 
-  <!-- Profile Dropdown -->
+<!-- Undo/Redo Buttons BELOW the divider -->
+<div class="flex justify-center items-center gap-4 py-4 bg-black">
+  <button id="restoreBtn" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition">
+    ⟲ Undo Clear
+  </button>
+  <div class="w-px h-6 bg-gray-500"></div>
+  <button id="redoBtn" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition">
+    ↻ Redo Clear
+  </button>
+</div>
+
+
+  <!-- Profile Dropdown (guest login/signup or account delete) -->
   <div id="dashboardPopup" class="hidden fixed top-20 right-4 bg-gray-800 border border-gray-600 rounded-lg shadow-lg p-6 w-80 z-50">
     {% if user.is_authenticated %}
       <h3 class="text-lg font-semibold mb-3">Account Management</h3>
@@ -54,65 +74,114 @@
     {% endif %}
   </div>
 
-  <!-- Chat History Box -->
-<main class="flex-1 overflow-y-auto px-4 py-6 flex justify-center items-center bg-gray-900">
-  <div class="w-full max-w-3xl bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-700 h-[75vh] overflow-y-auto" id="chat-box">
-    <div class="space-y-4">
-      {% for entry in chat_history %}
-        {% if entry.sender == "user" %}
-          <div class="flex justify-end">
-            <div class="bg-blue-600 text-white p-3 rounded-lg max-w-[80%] shadow relative">
-              <p>{{ entry.message }}</p>
-              <span class="absolute bottom-1 right-2 text-xs text-gray-300">{{ entry.timestamp }}</span>
+  <!-- Chat Section -->
+  <main class="flex-1 px-4 py-4 flex justify-center items-center bg-black overflow-hidden">
+    <div class="w-full max-w-5xl bg-gray-900 rounded-xl p-6 shadow-lg border border-gray-700 h-full overflow-y-auto" id="chat-box">
+      <div class="space-y-4 h-full">
+        {% for entry in chat_history %}
+          {% if entry.sender == "user" %}
+            <div class="flex justify-end">
+              <div class="bg-blue-600 text-white p-3 rounded-lg max-w-[80%] shadow relative">
+                <p>{{ entry.message }}</p>
+                <span class="absolute bottom-1 right-2 text-xs text-gray-300">{{ entry.timestamp }}</span>
+              </div>
             </div>
-          </div>
-        {% else %}
-          <div class="flex justify-start">
-            <div class="bg-gray-700 text-white p-3 rounded-lg max-w-[80%] shadow relative">
-              <div class="typing-message" data-text="{{ entry.message|escapejs }}"></div>
-              <span class="absolute bottom-1 right-2 text-xs text-gray-400">{{ entry.timestamp }}</span>
+          {% else %}
+            <div class="flex justify-start">
+              <div class="bg-gray-700 text-white p-3 rounded-lg max-w-[80%] shadow relative">
+                <div class="typing-message" data-text="{{ entry.message|escapejs }}"></div>
+                <span class="absolute bottom-1 right-2 text-xs text-gray-400">{{ entry.timestamp }}</span>
+              </div>
             </div>
-          </div>
-        {% endif %}
-      {% endfor %}
+          {% endif %}
+        {% endfor %}
+      </div>
     </div>
-  </div>
-</main>
+  </main>
 
-  <!-- Chat Input + Clear -->
-<form method="POST" class="bg-gray-900 p-4 border-t border-gray-800">
-  <div class="max-w-3xl mx-auto flex flex-col sm:flex-row items-center gap-4">
-    {% csrf_token %}
-    <input
-      type="text"
-      name="message"
-      placeholder="Type your question..."
-      required
-      class="flex-1 px-4 py-3 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
-    />
-
-    <div class="flex items-center w-full sm:w-auto gap-3">
-      <button type="submit"
-              class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition w-full sm:w-auto">
-        Send
-      </button>
-
-      <!-- Divider -->
-      <div class="w-[1px] h-6 bg-gray-500 hidden sm:block"></div>
-
-      <button type="submit" name="clear"
-              class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg transition w-full sm:w-auto">
-        Clear
-      </button>
+  <!-- Chat Input -->
+  <form method="POST" class="bg-black p-4 border-t border-gray-800">
+    <div class="max-w-5xl mx-auto w-full">
+      <div class="flex flex-col sm:flex-row items-center gap-4 w-full">
+        {% csrf_token %}
+        <input
+          type="text"
+          name="message"
+          placeholder="Type your question..."
+          required
+          class="flex-1 px-4 py-3 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+        />
+        <button type="submit"
+                class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition w-full sm:w-auto">
+          Send
+        </button>
+        <button type="button" id="clearBtn"
+                class="bg-red-700 hover:bg-red-800 text-white px-6 py-3 rounded-lg transition w-full sm:w-auto">
+          Clear
+        </button>
+      </div>
     </div>
-  </div>
-</form>
+  </form>
 
+  <!-- Scripts -->
   <script>
-    window.onload = () => {
-      const chatBox = document.getElementById('chat-box');
-      chatBox.scrollTop = chatBox.scrollHeight;
-    };
+    const chatBox = document.getElementById('chat-box').querySelector('.space-y-4');
+    const inputBox = document.querySelector("input[name='message']");
+    const restoreBtn = document.getElementById("restoreBtn");
+    const redoBtn = document.getElementById("redoBtn");
+    const clearedHistory = [];
+    const redoHistory = [];
+
+    window.addEventListener("DOMContentLoaded", () => {
+      const greeting = document.createElement("div");
+      greeting.innerHTML = `
+        <div class="flex justify-start">
+          <div class="bg-gray-700 text-white p-3 rounded-lg max-w-[80%] shadow relative">
+            <p>Hello there! 👋 What can I help you with today?</p>
+          </div>
+        </div>
+      `;
+      chatBox.appendChild(greeting);
+
+      const box = document.getElementById("chat-box");
+      box.scrollTop = box.scrollHeight;
+
+      const botMessages = document.querySelectorAll(".typing-message");
+      botMessages.forEach((el) => {
+        const raw = el.getAttribute("data-text");
+        try {
+          const decoded = JSON.parse(`"${raw}"`);
+          el.textContent = decoded;
+        } catch {
+          el.textContent = raw;
+        }
+      });
+    });
+
+    document.getElementById("clearBtn").addEventListener("click", () => {
+      if (chatBox.innerHTML.trim() !== "") {
+        clearedHistory.push(chatBox.innerHTML);
+        redoHistory.length = 0;
+        chatBox.innerHTML = "";
+      }
+      inputBox.value = "";
+    });
+
+    restoreBtn.addEventListener("click", () => {
+      if (clearedHistory.length > 0) {
+        const last = clearedHistory.pop();
+        redoHistory.push(chatBox.innerHTML);
+        chatBox.innerHTML = last;
+      }
+    });
+
+    redoBtn.addEventListener("click", () => {
+      if (redoHistory.length > 0) {
+        const redo = redoHistory.pop();
+        clearedHistory.push(chatBox.innerHTML);
+        chatBox.innerHTML = redo;
+      }
+    });
 
     document.getElementById("profileIcon").addEventListener("click", () => {
       const popup = document.getElementById("dashboardPopup");
@@ -129,27 +198,3 @@
   </script>
 </body>
 </html>
-
-<script>
-  window.onload = () => {
-    const chatBox = document.getElementById('chat-box');
-    chatBox.scrollTop = chatBox.scrollHeight;
-
-    const messages = document.querySelectorAll('.typing-message');
-    messages.forEach((el) => {
-      const fullText = el.getAttribute('data-text');
-      el.textContent = "";
-      let i = 0;
-
-      function type() {
-        if (i < fullText.length) {
-          el.textContent += fullText.charAt(i);
-          i++;
-          setTimeout(type, 15); // Adjust typing speed here
-        }
-      }
-      type();
-    });
-  };
-</script>
-
