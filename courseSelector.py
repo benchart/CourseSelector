@@ -48,9 +48,9 @@ class CourseSelector:
             return default if value == 'null' or value is None or value == '' else value
 
         username = handle_null(kwargs.get('username', 'user1'), 'user1')
-        catalogueNumMax = handle_null(kwargs.get('catalogueNumMax', 9999), 9999)
+        catalogueNumMax = handle_null(kwargs.get('catalogueNumMax', 999999), 999999)
         catalogueNumMin = handle_null(kwargs.get('catalogueNumMin', 0), 0)
-        creditMax = handle_null(kwargs.get('creditMax', 5), 5)
+        creditMax = handle_null(kwargs.get('creditMax', 10), 10)
         creditMin = handle_null(kwargs.get('creditMin', 0), 0)
 
         class_code = kwargs.get('class_code', [])
