@@ -75,43 +75,21 @@ class ChatbotModel:
 
     #used for execution of chatbot commands
 
-    def callChatbot(self, prompt: str):
-        
+    def callChatbot(self, prompt: str) -> str:
         try:
             response = ollama.chat(
                 model='llama3.2',
-                messages=[{'role': 'user', 'content': prompt}],
+                messages=[{"role": "user", "content": prompt}],
                 tools=[
                     self.get_random_joke,
                     self.does_not_match,
                     self.management.findUser,
                     self.courseSelector.filterClassesMaster
                 ]
-                # temperature=0.2,
-                # system="You are a helpful assistant that helps students plan their class schedule.",
-                # top_p=0.95,
-                # repeat_penalty=1.1,
             )
         except Exception as e:
-            print("❌ ERROR calling ollama.chat:", e)
+            print("❌ Ollama call error:", e)
             return "❌ Internal server error — check terminal for details."
-        
-        response = ollama.chat(
-            model='llama3.2',
-            messages=[{'role': 'user', 'content': prompt}],
-            tools=[
-                self.get_random_joke,
-                self.does_not_match,
-                self.management.findUser,
-                self.courseSelector.filterClassesMaster
-            ],
-            temperature=0.2,
-            system="You are a helpful assistant that helps students plan their class schedule.",
-            top_p=0.95,
-            repeat_penalty=1.1,
-        )
-
-        print(response)
 
         available_functions = {
             'get_random_joke': self.get_random_joke,
@@ -129,7 +107,7 @@ class ChatbotModel:
                     try:
                         args = tool.function.arguments or {}
                         function_output = function_to_call(**args)
-                        result += f"🛠 Tool `{tool.function.name}` responded: {function_output}\n"
+                        result += f"{function_output}\n"
                     except Exception as e:
                         result += f"⚠️ Error calling `{tool.function.name}`: {e}\n"
                 else:
@@ -138,6 +116,74 @@ class ChatbotModel:
             result = response.message.content  # Fallback to assistant's actual message
 
         return result
+    
+
+
+
+
+    # def callChatbot(self, prompt: str):
+        
+    #     try:
+    #         response = ollama.chat(
+    #             model='llama3.2',
+    #             messages=[{'role': 'user', 'content': prompt}],
+    #             tools=[
+    #                 self.get_random_joke,
+    #                 self.does_not_match,
+    #                 self.management.findUser,
+    #                 self.courseSelector.filterClassesMaster
+    #             ]
+    #             # temperature=0.2,
+    #             # system="You are a helpful assistant that helps students plan their class schedule.",
+    #             # top_p=0.95,
+    #             # repeat_penalty=1.1,
+    #         )
+    #     except Exception as e:
+    #         print("❌ ERROR calling ollama.chat:", e)
+    #         return "❌ Internal server error — check terminal for details."
+        
+    #     response = ollama.chat(
+    #         model='llama3.2',
+    #         messages=[{'role': 'user', 'content': prompt}],
+    #         tools=[
+    #             self.get_random_joke,
+    #             self.does_not_match,
+    #             self.management.findUser,
+    #             self.courseSelector.filterClassesMaster
+    #         ],
+    #         temperature=0.2,
+    #         system="You are a helpful assistant that helps students plan their class schedule.",
+    #         top_p=0.95,
+    #         repeat_penalty=1.1,
+    #     )
+
+    #     print(response)
+
+    #     available_functions = {
+    #         'get_random_joke': self.get_random_joke,
+    #         'does_not_match': self.does_not_match,
+    #         'findUser': self.management.findUser,
+    #         'filterClassesMaster': self.courseSelector.filterClassesMaster
+    #     }
+
+    #     result = ""
+
+    #     if response.message.tool_calls:
+    #         for tool in response.message.tool_calls or []:
+    #             function_to_call = available_functions.get(tool.function.name)
+    #             if function_to_call:
+    #                 try:
+    #                     args = tool.function.arguments or {}
+    #                     function_output = function_to_call(**args)
+    #                     result += f"🛠 Tool `{tool.function.name}` responded: {function_output}\n"
+    #                 except Exception as e:
+    #                     result += f"⚠️ Error calling `{tool.function.name}`: {e}\n"
+    #             else:
+    #                 result += f"❓ Unknown tool: {tool.function.name}\n"
+    #     else:
+    #         result = response.message.content  # Fallback to assistant's actual message
+
+    #     return result
 
     # def callChatbot(self, prompt: str):
     #     #if not self.is_ollama_running():
