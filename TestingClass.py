@@ -3,7 +3,7 @@ from core.userManagement import UserManagement
 from courseSelector import CourseSelector
 
 class TestingClass:
-    courseModel = CourseSelector("courseDatabase.txt")
+    courseModel = CourseSelector("core/courseDatabase.txt")
     #courseModel.findCourseByParameter("courseDatabase.txt")
     #courseModel.getByClassCode(["PHIL-51184", "HON-41049"])
     #courseModel.getByType("name", ["Art History in Biology", "Opera in Biology"])

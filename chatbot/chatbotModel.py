@@ -18,7 +18,7 @@ class ChatbotModel:
 
     def __init__(self):
         self.management = UserManagement("studentData.txt", "adminData.txt")
-        self.courseSelector = CourseSelector("courseDatabase.txt")
+        self.courseSelector = CourseSelector("core/courseDatabase.txt")
 
     @staticmethod
     def is_ollama_running():
