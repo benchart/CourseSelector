@@ -39,7 +39,7 @@ def login_student(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return redirect("chatbot")  # 👈 This should match the name of your chatbot URL
+            return redirect("chatbot:chatbot")  # 👈 This should match the name of your chatbot URL
         else:
             messages.error(request, "Invalid username or password.")
 
