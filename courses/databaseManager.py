@@ -1,6 +1,7 @@
 import json
 
 class DatabaseManager:
+
     courseData: list[dict]
     databasePath: str
 
@@ -112,12 +113,3 @@ class DatabaseManager:
         except FileNotFoundError:
             print(f"Error: File not found at {databasePath}")
             return FileNotFoundError
-        
-
-
-DBManager = DatabaseManager("courseDatabase.txt")
-y = DBManager.updateCourse("HHC-H 105","Education","101","Drake J","Education and Its Aims","General Education Foundations","09:45","11:00","M", "",1.5,"Required of all new Hutton students pursuing HHN as of Fall 2024.")
-DBManager.editCourseData({"class_code": "CHEM-68708", "subject": "Philosophy", "catalog_number": "213", "instructor": "Lee C", "name": "Art History in Philosophy", "topic": "Art History", "start_time": "15:00", "end_time": "16:00", "days": "TR", "prerequisites": "", "units": 4.0, "description": "A deep dive into art history as it relates to philosophy."}, y)
-#DBManager.searchCourse("chem")
-for course in DBManager.courseData:
-    DBManager.printCourse(course)
