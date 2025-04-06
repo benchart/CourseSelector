@@ -25,7 +25,7 @@ class CourseSelector:
 
 
     #master filtering function, uses the whole courseData dictionary to provide the most complete course list
-    def filterClassesMaster(self, catalogueNumMax=None, catalogueNumMin=None, class_code=None, creditMax=None, creditMin=None, instructorName=None, status=False, subjectName=None, username=None):
+    def filterClassesMaster(self, catalogueNumMax: int, catalogueNumMin: int, class_code: list, creditMax:float, creditMin: float, instructorName: list, status: bool, subjectName: list, username: str = "user1"):
         
         '''
         This function is used to filter out classes by a variety of parameters
@@ -54,7 +54,8 @@ class CourseSelector:
         status = status if status is not None else False
         subjectName = subjectName if subjectName is not None else []
         class_code = class_code if class_code is not None else []
-        username = username if username is not None else "user1"
+        if(username != "user1"):
+            username = username
 
         self.courseData = self._filterByNum('units', creditMin, creditMax)
         self.courseData = self._filterByNum('catalog_number', catalogueNumMin, catalogueNumMax)

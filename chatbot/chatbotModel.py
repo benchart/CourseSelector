@@ -73,8 +73,10 @@ class ChatbotModel:
             for tool in response.message.tool_calls or []:
                 function_to_call = available_functions.get(tool.function.name)
                 if function_to_call:
+                    
                     # Ensure we pass default or empty arguments when none are provided
                     args = tool.function.arguments if tool.function.arguments else {}
+
                     try:
                         print('Function Output', function_to_call(**args) + "\n")
                     except Exception as e:
