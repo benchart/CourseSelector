@@ -1,3 +1,0 @@
-{"name": "Parley Hartwell", "username": "phartwell", "age": 19, "class": "Freshman", "credits": 18, "interestIndicies": [1, 6, 7, 10]}
-{"name": "Ben", "username": "Hartman", "age": 19, "class": "Freshman", "credits": 9, "interestIndicies": [4, 5, 6]}
-{"name": "John", "username": "Pork", "age": 19, "class": "Freshman", "credits": 30, "interestIndicies": [4, 6, 12, 17, 14, 30, 25]}

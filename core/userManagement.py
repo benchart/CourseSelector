@@ -33,10 +33,11 @@ class UserManagement:
 
     # Creates a new student
     @staticmethod
-    def createNewStudent(fullName: str, userName: str, age: int, classStanding: str, numCredits: int, interestIndicies):
+    def createNewStudent(fullName: str, userName: str, password: str, age: int, classStanding: str, numCredits: int, interestIndicies):
         data = {
             "name": fullName,
             "username": userName,
+            "password": password,
             "age": age,
             "class": classStanding,
             "credits": numCredits,
@@ -53,7 +54,7 @@ class UserManagement:
 
     # Creates a new admin
     @staticmethod
-    def createNewAdmin(fullName: str, userName: str, age: int, adminPasskey: int):
+    def createNewAdmin(fullName: str, userName: str, age: int, adminPasskey: str):
         data = {
             "name": fullName,
             "username": userName,
