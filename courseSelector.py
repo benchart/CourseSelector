@@ -42,17 +42,17 @@ class CourseSelector:
         - username (str): The username of the person making the request (default is 'user1').
         """
         #pull data from kwargs
-        username = kwargs.get('username', 'user1')
+        username = kwargs.get('username', 'user1') or 'user1'
         subjectName = kwargs.get('subjectName', [])
         instructorName = kwargs.get('instructorName', [])
-    
+        
         catalogueNumMax = kwargs.get('catalogueNumMax', 9999)
         catalogueNumMin = kwargs.get('catalogueNumMin', 0)
         creditMax = kwargs.get('creditMax', 5)
         creditMin = kwargs.get('creditMin', 0)
         class_code = kwargs.get('class_code', [])
 
-        #catch default values in case the AI decides to pass something stupid
+        # Catch default values in case the AI decides to pass something invalid
         username = username if username != 'null' else 'user1'
         catalogueNumMax = catalogueNumMax if catalogueNumMax is not None else 9999
         catalogueNumMin = catalogueNumMin if catalogueNumMin is not None else 0
@@ -63,12 +63,21 @@ class CourseSelector:
         subjectName = subjectName if subjectName is not None else []
         class_code = class_code if class_code is not None else []
 
-
-        # Check that class_code and subjectName are lists
+        # Ensure class_code and subjectName are lists (handle string inputs)
         if isinstance(class_code, str):
             class_code = json.loads(class_code)
         if isinstance(subjectName, str):
             subjectName = json.loads(subjectName)
+
+        # Ensure values are numbers or set defaults
+        if not isinstance(catalogueNumMax, (int, float)):
+            catalogueNumMax = 9999
+        if not isinstance(catalogueNumMin, (int, float)):
+            catalogueNumMin = 0
+        if not isinstance(creditMax, (int, float)):
+            creditMax = 5
+        if not isinstance(creditMin, (int, float)):
+            creditMin = 0
 
         # reload course data
         self.courseData = self.readCourseList("courseDatabase.txt")
@@ -112,7 +121,7 @@ class CourseSelector:
         try:
             for course in self.courseData:
                 try:
-                    course_value = int(course[filter])
+                    course_value = float(course[filter])
 
                     if course_value >= numMin and course_value <= numMax:
                         newCourseList.append(course)
