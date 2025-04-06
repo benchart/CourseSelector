@@ -37,79 +37,98 @@
 
 <!-- Main Section -->
 <main class="flex flex-1 overflow-hidden bg-black text-white">
-  <!-- Left Tips -->
-  <aside class="hidden lg:block w-1/5 bg-gray-900 p-4 border-r border-gray-700">
-    <h2 class="text-base font-bold mb-3">💡 Tips</h2>
-    <ul class="text-[15px] space-y-2 text-gray-300">
-      <li>📌 Ask about class schedules or gen eds</li>
-      <li>💬 “What classes are good for CS sophomores?”</li>
-      <li>📘 “Can I minor in business?”</li>
-      <li>📅 “What’s a balanced semester?”</li>
-    </ul>
-    <h3 class="mt-5 text-base font-semibold text-white">🔍 Common Questions</h3>
-    <ul class="text-[15px] text-gray-300 space-y-2 mt-2">
-      <li>🧠 “How do I choose between electives?”</li>
-      <li>👩‍🎓 “Should I take summer courses?”</li>
-      <li>🧩 “What class fulfills the math requirement?”</li>
-      <li>🎯 “How can I build a schedule with no morning classes?”</li>
-    </ul>
-  </aside>
+<!-- Left Tips -->
+<aside class="hidden lg:block w-1/5 bg-gray-900 p-4 border-r border-gray-700">
+  <!-- Tips -->
+  <h2 class="text-base font-bold mb-3">💡 Tips</h2>
+  <ul class="text-[15px] space-y-2 text-gray-300 mb-8">
+    <li>📌 Ask about class schedules or gen eds</li>
+    <li>💬 “What classes are good for CS sophomores?”</li>
+    <li>📘 “Can I minor in business?”</li>
+    <li>📅 “What’s a balanced semester?”</li>
+  </ul>
+  <br>
+  <!-- Common Questions -->
+  <h3 class="text-base font-semibold text-white mb-3">🔍 Common Questions</h3>
+  <ul class="text-[15px] text-gray-300 space-y-2 mb-8">
+    <li>🧠 “How do I choose between electives?”</li>
+    <li>👩‍🎓 “Should I take summer courses?”</li>
+    <li>🧩 “What class fulfills the math requirement?”</li>
+    <li>🎯 “How can I build a schedule with no morning classes?”</li>
+  </ul>
+  <br>
+  <!-- Try Asking -->
+  <h2 class="text-base font-bold mb-3">💡 Try Asking</h2>
+  <ul class="text-[15px] space-y-2 text-gray-300">
+    <li>🎓 “Help me schedule gen eds”</li>
+    <li>🛡 “Suggest electives for cybersecurity”</li>
+    <li>🧠 “What is a good AI course plan?”</li>
+    <li>🗓 “Build a schedule around my job”</li>
+  </ul>
+</aside>
 
-  <!-- Chatbox -->
-  <section class="flex-1 overflow-y-auto" id="chat-box">
-    <div class="max-w-4xl mx-auto py-6 px-4 space-y-4">
-      {% for entry in chat_history %}
-        {% if entry.sender == "user" %}
-          <div class="flex justify-end">
-            <div class="bg-blue-600 text-white p-3 rounded-lg max-w-[70%] shadow">
-              <p class="break-words">{{ entry.message }}</p>
-              <span class="timestamp">{{ entry.timestamp }}</span>
-            </div>
+<!-- Chatbox -->
+<section class="flex-1 overflow-y-auto" id="chat-box">
+  <div class="max-w-4xl mx-auto py-6 px-4 space-y-4">
+    {% for entry in chat_history %}
+      {% if entry.sender == "user" %}
+        <div class="w-full flex">
+          <div class="bg-blue-600 text-white p-3 rounded-lg shadow w-fit max-w-[70%] ml-auto">
+            <p class="break-words text-right">{{ entry.message }}</p>
+            <span class="timestamp">{{ entry.timestamp }}</span>
           </div>
-        {% else %}
-          <div class="flex justify-start">
-            <div class="bg-gray-700 text-white p-3 rounded-lg max-w-[70%] shadow">
-              <div class="typing-message break-words" data-text="{{ entry.message|escapejs }}"></div>
-              <span class="timestamp">{{ entry.timestamp }}</span>
-            </div>
+        </div>
+      {% else %}
+        <div class="w-full flex">
+          <div class="bg-gray-700 text-white p-3 rounded-lg shadow w-fit max-w-[70%] mr-auto">
+            <div class="typing-message break-words text-left" data-text="{{ entry.message|escapejs }}"></div>
+            <span class="timestamp">{{ entry.timestamp }}</span>
           </div>
-        {% endif %}
-      {% endfor %}
-    </div>
-  </section>
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+</section>
 
-  <!-- Right Tips -->
-  <aside class="hidden lg:block w-1/5 bg-gray-900 p-4 border-l border-gray-700">
-    <h2 class="text-base font-bold mb-3">💡 Try Asking</h2>
-    <ul class="text-[15px] space-y-2 text-gray-300">
-      <li>🎓 “Help me schedule gen eds”</li>
-      <li>🛡 “Suggest electives for cybersecurity”</li>
-      <li>🧠 “What is a good AI course plan?”</li>
-      <li>🗓 “Build a schedule around my job”</li>
-    </ul>
-  </aside>
+  <!-- Right Spacer -->
+  <aside class="hidden lg:block w-1/5 bg-gray-900 p-4 border-l border-gray-700"></aside>
 </main>
 
-<!-- Chat Input -->
-<form method="POST" class="bg-black p-4 border-t border-gray-800">
-  <div class="max-w-4xl mx-auto flex flex-col sm:flex-row items-center gap-4">
-    {% csrf_token %}
-    <input type="text" name="message" placeholder="Type your question..." required class="flex-1 px-4 py-3 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full" />
-    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition w-full sm:w-auto">Send</button>
-  </div>
-</form>
+<!-- Full-width Chat Input Footer -->
+<div class="w-full bg-black border-t border-gray-800 px-6 py-4">
+  <h1 class="absolute left-1/2 transform -translate-x-1/2 text-2xl font-bold text-white opacity-10 pointer-events-none">
+    Smart Course Chatbot
+  </h1>
+  <form method="POST" class="relative z-10 max-w-4xl mx-auto">
+    <div class="flex flex-col sm:flex-row items-center gap-4">
+      {% csrf_token %}
+      <input type="text" name="message" placeholder="Type your question..." required class="flex-1 px-4 py-3 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full" />
+      <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition w-full sm:w-auto">Send</button>
+    </div>
+  </form>
+</div>
 
 <!-- Scripts -->
 <script>
   const decodeAll = () => {
     const botMessages = document.querySelectorAll(".typing-message");
     botMessages.forEach((el) => {
-      const raw = el.getAttribute("data-text");
+      let raw = el.getAttribute("data-text");
       try {
-        const decoded = JSON.parse(`"${raw}"`).replace(/\*/g, ",");
-        el.textContent = decoded;
+        let decoded = JSON.parse(`"${raw}"`);
+
+        decoded = decoded
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')  // bold
+          .replace(/\*(.*?)\*/g, '<em>$1</em>')              // italic
+          .replace(/„|“|”/g, '"')
+          .replace(/‚|‘|’/g, "'")
+          .replace(/\s*([.,;:!?])\s*/g, '$1 ')               // punctuation cleanup
+          .replace(/\s+/g, ' ')                              // normalize spaces
+          .trim();
+
+        el.innerHTML = decoded;
       } catch {
-        el.textContent = raw.replace(/\*/g, ",");
+        el.textContent = raw;
       }
     });
   };
