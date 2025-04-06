@@ -4,8 +4,7 @@ import logging
 from core.userManagement import UserManagement
 from courseSelector import CourseSelector
 
-#from interests import INTEREST_OPTIONS, course_descriptions
-
+#if you want to see logging, uncomment
 #logging.basicConfig(level=logging.INFO,
                     #format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -13,7 +12,8 @@ class ChatbotModel:
 
     management = UserManagement("studentData.txt", "adminData.txt")
     courseSelector = CourseSelector("courseDatabase.txt")
-
+    
+    #ollama joke generator I found online as testing, but we like it so we'll keep it in
     def get_random_joke(self, prompt: str):
         """
         Fetches a random joke from an API.

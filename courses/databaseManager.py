@@ -12,7 +12,7 @@ class DatabaseManager:
     
     #database functionality
 
-    #adds a new course to the database
+    #adds a new course to the database via the specified parameters
     def addNewCourse(self, class_code: str, subject: str,
                      catalog_number: int, instructor: str,
                      name: str, topic: str,
@@ -26,6 +26,7 @@ class DatabaseManager:
 
         self.writeCourseList(self.databasePath)
 
+    #returns a new course dictionary with the specified parameters
     @staticmethod
     def updateCourse(class_code: str, subject: str,
                      catalog_number: int, instructor: str,
