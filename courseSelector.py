@@ -119,48 +119,44 @@ class CourseSelector:
         if codeList == [] or [None]:
             return self.courseData
         
-        newCourseList = []
+        newCourseList = set()
         try:
             for course in self.courseData:
                 for code in codeList:
                     print(code)
                     if(code in course[parameterName]):
-                        newCourseList.append(course)
+                        newCourseList.add(course)
                         break
-            return newCourseList
+            print(newCourseList)
+            return list(newCourseList)
         except KeyError:
             print(F"parameter not found: {KeyError}")
 
     #filters classes based on specified num range:
     def _filterByNum(self, filter: str, numMin: float, numMax: float) -> list[dict]:
-        newCourseList = []
+        newCourseList = set()
 
         try:
             for course in self.courseData:
                 try:
                     course_value = float(course[filter])
                     if course_value is None or not isinstance(course_value, str):
-                        newCourseList.append(course)
+                        newCourseList.add(course)
 
                     if course_value >= numMin and course_value <= numMax:
-                        newCourseList.append(course)
+                        newCourseList.add(course)
                 except ValueError:
                     print(f"Invalid value for {filter}: {course[filter]}. Skipping this course.")
-            return newCourseList
+            return list(newCourseList)
         
         except KeyError:
             print(F"Error occured: {KeyError}")
 
     #finds relevant classes based on the interest list
     def findRelevantCoursesByInterest(self, username: str, status: bool):
-        if(username == ""):
-            return []
-        
-        print(username)
-        print(UserManagement.findUser(username, status))
+
         interestList = CourseSelector._matchInterests(UserManagement.findUser(username, status))
         print(f"Interest List: {interestList}")
-
 
         message = {
             'role': 'user', 
@@ -168,7 +164,6 @@ class CourseSelector:
         }
 
         response_content = []
-        print(message)
 
         for part in ollama.chat(model='llama3.2', messages=[message], stream=True):
             content = part['message']['content']
