@@ -1,0 +1,1 @@
+{"name": "jOHN", "username": "pork", "password": "pork", "age": 8000, "class": "Junior", "credits": 50, "interestIndicies": [15, 19, 21, 24, 30, 46]}
