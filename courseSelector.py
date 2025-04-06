@@ -25,12 +25,12 @@ class CourseSelector:
 
 
     #master filtering function, uses the whole courseData dictionary to provide the most complete course list
-    def filterClassesMaster(self, catalogueNumMax: int, catalogueNumMin: int, class_code: list, creditMax: float, creditMin: float, instructorName: list, status: bool, subjectName: list, username: str = "user1"):
+    def filterClassesMaster(self, **kwargs):
         """
         Master filtering function that filters courses based on multiple parameters
         such as credits, catalogue numbers, subject, class codes, etc.
         
-        Arguments:
+        Arguments (now passed as keyword arguments):
         - catalogueNumMax (int): The maximum catalogue number to filter by.
         - catalogueNumMin (int): The minimum catalogue number to filter by.
         - class_code (list): List of class codes to filter by.
@@ -40,23 +40,30 @@ class CourseSelector:
         - status (bool): Whether the user is an admin (True) or a student (False).
         - subjectName (list): List of subject names to filter by.
         - username (str): The username of the person making the request (default is 'user1').
-        
-        Returns:
-        - list: A list of courses that match the provided filters.
         """
+        # Set default values for missing arguments
+        username = kwargs.get('username', 'user1')
+        subjectName = kwargs.get('subjectName', [])
+        instructorName = kwargs.get('instructorName', [])
     
-        # Provide default values for parameters that are None
-        username = username if username is not None else "user1"
-        subjectName = subjectName if subjectName is not None else []
-        instructorName = instructorName if instructorName is not None else []
-    
-        # If catalogueNumMax or catalogueNumMin are None, set sensible default limits
+        catalogueNumMax = kwargs.get('catalogueNumMax', 9999)
+        catalogueNumMin = kwargs.get('catalogueNumMin', 0)
+        creditMax = kwargs.get('creditMax', 5)
+        creditMin = kwargs.get('creditMin', 0)
+        class_code = kwargs.get('class_code', [])
+
+        # Set defaults for `None` values to avoid issues in filtering
+        username = username if username != 'null' else 'user1'
         catalogueNumMax = catalogueNumMax if catalogueNumMax is not None else 9999
         catalogueNumMin = catalogueNumMin if catalogueNumMin is not None else 0
         creditMax = creditMax if creditMax is not None else 5
         creditMin = creditMin if creditMin is not None else 0
-
-        # Start with the full list of courses
+        instructorName = instructorName if instructorName is not None else []
+        status = kwargs.get('status', False)  # False is default for student status
+        subjectName = subjectName if subjectName is not None else []
+        class_code = class_code if class_code is not None else []
+    
+        # Read the full course list from the database
         self.courseData = self.readCourseList("courseDatabase.txt")
     
         # Apply filters in sequence
@@ -70,6 +77,8 @@ class CourseSelector:
         self.findRelevantCoursesByInterest(username, status)
     
         return self.courseData
+
+
 
 
     #fetches course based on a specified parameter
@@ -92,16 +101,18 @@ class CourseSelector:
     #filters classes based on specified num range:
     def _filterByNum(self, filter: str, numMin: float, numMax: float) -> list[dict]:
         newCourseList = []
+
         try:
             for course in self.courseData:
                 try:
-                    course_value = int(course[filter])  # Try converting to integer
+                    course_value = int(course[filter])
+                    
                     if course_value >= numMin and course_value <= numMax:
-                        # Proceed with your logic
                         newCourseList.append(course)
                 except ValueError:
                     print(f"Invalid value for {filter}: {course[filter]}. Skipping this course.")
             return newCourseList
+        
         except KeyError:
             print(F"Error occured: {KeyError}")
 
@@ -109,8 +120,8 @@ class CourseSelector:
     def findRelevantCoursesByInterest(self, username: str, status: bool):
         if(username == ""):
             return []
+        
         interestList = CourseSelector._matchInterests(UserManagement.findUser(username, status))
-        print(interestList)
 
         message = {'role': 'user', 'content': f'Assume you are an academic advisor. Based on this list of my interests ({interestList}, pick 15 classes from the list of potential classes in json notation ({self.courseData}) and explain why you have selected them. Match your selections as closely as possible to my interests. Make sure you pick exactly 15.)'}
         response_content = []
