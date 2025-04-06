@@ -9,6 +9,11 @@ import pytz
 
 def chatbot_view(request):
     # Initialize session-based chat history if it doesn't exist
+    
+    if request.GET.get("clear") == "true":
+        request.session["chat_history"] = []
+        return redirect("chatbot:chatbot")
+    
     if "chat_history" not in request.session:
         request.session["chat_history"] = []
 
@@ -49,6 +54,11 @@ def chatbot_view(request):
     return render(request, "chatbot.html", {
         "chat_history": request.session.get("chat_history", [])
     })
+
+def delete_account(request):
+    logout(request)
+    request.session.flush()  # ✅ Clears chat + all session data
+    return redirect("home")
 
 def login_and_manage(request):
     if request.method == "POST":
