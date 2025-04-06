@@ -68,7 +68,7 @@ def signup_student(request):
                 "error": "Username already taken"
             })
 
-        User.objects.create_user(username=username, password=password)
+        User.objects.create_user(username=username, password=passkey)
 
         # Save to studentData.txt
         UserManagement.createNewStudent(
