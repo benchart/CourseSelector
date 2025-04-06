@@ -54,7 +54,7 @@ class UserManagement:
 
     # Creates a new admin
     @staticmethod
-    def createNewAdmin(fullName: str, userName: str, age: int, adminPasskey: int):
+    def createNewAdmin(fullName: str, userName: str, age: int, adminPasskey: str):
         data = {
             "name": fullName,
             "username": userName,
