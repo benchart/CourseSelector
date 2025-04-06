@@ -20,8 +20,11 @@ def chatbot_view(request):
         user_input = request.POST.get("message")
 
         if user_input:
-            model = ChatbotModel()
-            response = model.does_not_match(user_input)
+            try:
+                model = ChatbotModel()
+                response = model.callChatbot(user_input)
+            except Exception as e:
+                response = "⚠️ Unable to connect to your local Ollama instance. Please ensure it's installed and running by executing <code>ollama run llama3.2</code> in your terminal."
 
             # Optional: precise Indiana timezone timestamp
             # timestamp = now().astimezone(timezone('America/Indiana/Indianapolis')).strftime("%I:%M %p")
