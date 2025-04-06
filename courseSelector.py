@@ -41,13 +41,12 @@ class CourseSelector:
         - subjectName (list): List of subject names to filter by.
         - username (str): The username of the person making the request (default is 'user1').
         """
-        # Pull data from kwargs and ensure proper types
-        username = kwargs.get('username', 'user1')
-
+        
         # Handle 'null' values and convert them to None or appropriate default
         def handle_null(value, default=None):
             return default if value == 'null' or value is None else value
 
+        username = handle_null(kwargs.get('username', 'user1'), 'user1')
         catalogueNumMax = handle_null(kwargs.get('catalogueNumMax', 9999), 9999)
         catalogueNumMin = handle_null(kwargs.get('catalogueNumMin', 0), 0)
         creditMax = handle_null(kwargs.get('creditMax', 5), 5)
@@ -117,14 +116,14 @@ class CourseSelector:
 
     #fetches course based on a specified parameter
     def _filterByType(self, parameterName: str, codeList: list) -> list[dict]:
-        if codeList == []:
+        if codeList == [] or [None]:
             return self.courseData
         
         newCourseList = []
-
         try:
             for course in self.courseData:
                 for code in codeList:
+                    print(code)
                     if(code in course[parameterName]):
                         newCourseList.append(course)
                         break
@@ -140,6 +139,8 @@ class CourseSelector:
             for course in self.courseData:
                 try:
                     course_value = float(course[filter])
+                    if course_value is None or not isinstance(course_value, str):
+                        newCourseList.append(course)
 
                     if course_value >= numMin and course_value <= numMax:
                         newCourseList.append(course)
@@ -155,6 +156,8 @@ class CourseSelector:
         if(username == ""):
             return []
         
+        print(username)
+        print(UserManagement.findUser(username, status))
         interestList = CourseSelector._matchInterests(UserManagement.findUser(username, status))
         print(f"Interest List: {interestList}")
 
@@ -181,6 +184,7 @@ class CourseSelector:
     def _matchInterests(user: dict) -> list:
         interestList: list = []
         try:
+            print(user)
             for index in user['interestIndicies']:
                 interestList.append(INTEREST_OPTIONS[int(index)])
             return interestList
