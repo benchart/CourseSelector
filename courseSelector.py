@@ -25,11 +25,8 @@ class CourseSelector:
 
 
     #master filtering function, uses the whole courseData dictionary to provide the most complete course list
-    def filterClassesMaster(self, username: str = "", status: bool = False, 
-                            creditMin: float = 0, creditMax: float = 1.0,
-                             catalogueNumMin: float = 0, catalogueNumMax: float = 500,
-                             instructorName: list = [], subjectName: str = [], 
-                             class_code: str = []):
+    def filterClassesMaster(self, catalogueNumMax=None, catalogueNumMin=None, class_code=None, creditMax=None, creditMin=None, instructorName=None, status=False, subjectName=None, username=None):
+        
         '''
         This function is used to filter out classes by a variety of parameters
         Always refer to the default parameters and thier type casting, do not input any NoneType values
@@ -48,6 +45,17 @@ class CourseSelector:
         Once all of the relevant filtering algorithims have been run, findRelevantCourseByInterest runs in order to find the best suitable match for the student.
         '''
 
+
+        catalogueNumMax = catalogueNumMax if catalogueNumMax is not None else float('inf') 
+        catalogueNumMin = catalogueNumMin if catalogueNumMin is not None else -float('inf')
+        creditMax = creditMax if creditMax is not None else float('inf') 
+        creditMin = creditMin if creditMin is not None else 0 
+        instructorName = instructorName if instructorName is not None else []
+        status = status if status is not None else False
+        subjectName = subjectName if subjectName is not None else ''
+        class_code = class_code if class_code is not None else ''
+        username = username if username is not None else ''
+
         self.courseData = self._filterByNum('units', creditMin, creditMax)
         self.courseData = self._filterByNum('catalog_number', catalogueNumMin, catalogueNumMax)
         self.courseData = self._filterByType('instructor', instructorName)
@@ -55,6 +63,7 @@ class CourseSelector:
         self.courseData = self._filterByType('class_code', class_code)
 
         self.findRelevantCoursesByInterest(username, status)
+
 
 
     #fetches course based on a specified parameter
