@@ -103,7 +103,7 @@ class CourseSelector:
         status = status.lower() == 'true' if isinstance(status, str) else status
 
         # Reload course data
-        self.courseData = self.readCourseList("courseDatabase.txt")
+        self.courseData = self.readCourseList("core/courseDatabase.txt")
 
         # Filter by parameters
         self.courseData = self._filterByNum('units', creditMin, creditMax)
