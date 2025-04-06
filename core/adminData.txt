@@ -1,1 +1,8 @@
-{"name": "Parley Hartwell", "username": "phartwell", "age": 19, "admin key": 157686}
+{ "username": "benchart2", "password": "Boot", "admin key": "SuperSecretKey123"}
+{ "username": "benchart3", "password": "Boot", "admin key": "SuperSecretKey123"}
+{ "username": "benchart4", "password": "Boot", "admin key": "SuperSecretKey123"}
+{"username": "benchart5", "password": "Boot", "admin key": "SuperSecretKey123"}
+
+{"username": "Benchart7", "password": "Boot", "admin key": "SuperSecretKey123"}
+{"username": "Benchart8", "password": "Boot", "admin key": "SuperSecretKey123"}
+{"username": "benchart9", "password": "Boot", "admin key": "SuperSecretKey123"}

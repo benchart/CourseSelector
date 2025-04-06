@@ -2,7 +2,7 @@ import json
 
 class UserManagement:
     studentFilepath = "core/studentData.txt"
-    adminFilepath = "adminData.txt"
+    adminFilepath = "core/adminData.txt"
 
     def __init__(self, studentFilepath: str, adminFilepath: str):
         self.studentFilepath = studentFilepath
@@ -52,13 +52,12 @@ class UserManagement:
                 print(f"Error: File not found at {UserManagement.studentFilepath}")
                 return FileNotFoundError
 
-    # Creates a new admin
+    # ✅ Fixed indentation for createNewAdmin
     @staticmethod
-    def createNewAdmin(fullName: str, userName: str, age: int, adminPasskey: str):
+    def createNewAdmin(userName: str, password: str, adminPasskey: str):
         data = {
-            "name": fullName,
             "username": userName,
-            "age": age,
+            "password": password,
             "admin key": adminPasskey
         }
 
