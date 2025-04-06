@@ -96,21 +96,29 @@ def signup_admin(request):
     if request.method == "POST":
         form = AdminSignupForm(request.POST)
         if form.is_valid():
-            if form.cleaned_data['passkey'] != ADMIN_PASSKEY:
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            passkey = form.cleaned_data['passkey']
+
+            if passkey != ADMIN_PASSKEY:
                 form.add_error("passkey", "Incorrect admin passkey")
-            elif User.objects.filter(username=form.cleaned_data['username']).exists():
+            elif User.objects.filter(username=username).exists():
                 form.add_error("username", "Username already taken")
             else:
-                User.objects.create_user(username=form.cleaned_data['username'], password=form.cleaned_data['password'])
+                User.objects.create_user(username=username, password=password)
+
+                # Save admin info to studentData.txt or other system if needed
                 UserManagement.createNewAdmin(
-                    fullName=form.cleaned_data['username'],
-                    userName=form.cleaned_data['username'],
+                    fullName=username,
+                    userName=username,
                     age=21,
                     adminPasskey=ADMIN_PASSKEY
                 )
-                return redirect("/admin/class-db")
+
+                return redirect("class_management")
     else:
         form = AdminSignupForm()
+
     return render(request, "core/signup_admin.html", {"form": form})
 
 def select_interests(request):
@@ -162,22 +170,17 @@ def select_interests(request):
 
 DATABASE_PATH = "core/courseDatabase.txt"  # Update as needed
 
-def manage_courses(request):
+def class_management(request):
     db = DatabaseManager(DATABASE_PATH)
 
-    # Handle search
     search_query = request.GET.get("search", "")
-    if search_query:
-        courses = db.searchCourse(search_query)
-    else:
-        courses = db.courseData
+    courses = db.searchCourse(search_query) if search_query else db.courseData
 
-    # Handle new course form
     if request.method == "POST":
         form = CourseForm(request.POST)
         if form.is_valid():
             db.addNewCourse(**form.cleaned_data)
-            return redirect("manage_courses")
+            return redirect("class_management")
     else:
         form = CourseForm()
 
@@ -185,6 +188,7 @@ def manage_courses(request):
         "courses": courses,
         "form": form
     })
+
 
 def delete_course(request, course_id):
     db = DatabaseManager(DATABASE_PATH)

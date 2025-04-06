@@ -9,6 +9,6 @@ urlpatterns = [
     path('signup/admin/', views.signup_admin, name='signup_admin'),
     path('select-interests/', views.select_interests, name='select_interests'),
     path("delete-account/", views.delete_account, name="delete_account"),
-    path("admin/class-db/", views.manage_courses, name="manage_courses"),
-    path("admin/delete-course/<int:course_id>/", views.delete_course, name="delete_course"),
+    path("manage-courses/", views.class_management, name="class_management"),
+    path("manage-courses/delete-course/<int:course_id>/", views.delete_course, name="delete_course"),
 ]

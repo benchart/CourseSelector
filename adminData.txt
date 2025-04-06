@@ -1,1 +1,6 @@
 {"name": "benchart", "username": "benchart", "age": 21, "admin key": "SuperSecretKey123"}
+{"name": "benchart@iu.edu", "username": "benchart@iu.edu", "age": 21, "admin key": "SuperSecretKey123"}
+{"name": "jonjon", "username": "jonjon", "age": 21, "admin key": "SuperSecretKey123"}
+{"name": "jonjono", "username": "jonjono", "age": 21, "admin key": "SuperSecretKey123"}
+{"name": "Porki", "username": "Porki", "age": 21, "admin key": "SuperSecretKey123"}
+{"name": "Hartmana", "username": "Hartmana", "age": 21, "admin key": "SuperSecretKey123"}

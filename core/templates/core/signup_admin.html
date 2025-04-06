@@ -39,23 +39,38 @@
           {% csrf_token %}
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Username -->
             <div>
               <label for="username" class="block text-sm font-medium mb-1">Username</label>
               <input type="text" name="username" id="username" required
-                     class="w-full px-4 py-3 border border-gray-300 rounded-lg text-base" />
+                     class="w-full px-4 py-3 border border-gray-300 rounded-lg text-base"
+                     value="{{ form.username.value|default_if_none:'' }}" />
+              {% if form.username.errors %}
+                <p class="text-sm text-red-500 mt-1">{{ form.username.errors.0 }}</p>
+              {% endif %}
             </div>
 
+            <!-- Password -->
             <div>
               <label for="password" class="block text-sm font-medium mb-1">Password</label>
               <input type="password" name="password" id="password" required
-                     class="w-full px-4 py-3 border border-gray-300 rounded-lg text-base" />
+                     class="w-full px-4 py-3 border border-gray-300 rounded-lg text-base"
+                     value="{{ form.password.value|default_if_none:'' }}" />
+              {% if form.password.errors %}
+                <p class="text-sm text-red-500 mt-1">{{ form.password.errors.0 }}</p>
+              {% endif %}
             </div>
 
+            <!-- Passkey -->
             <div class="md:col-span-2">
               <label for="passkey" class="block text-sm font-medium mb-1">Access Key</label>
               <input type="text" name="passkey" id="passkey" required
                      class="w-full px-4 py-3 border border-gray-300 rounded-lg text-base"
-                     placeholder="Provided by your institution" />
+                     placeholder="Provided by your institution"
+                     value="{{ form.passkey.value|default_if_none:'' }}" />
+              {% if form.passkey.errors %}
+                <p class="text-sm text-red-500 mt-1">{{ form.passkey.errors.0 }}</p>
+              {% endif %}
             </div>
           </div>
 
