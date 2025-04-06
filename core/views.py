@@ -64,7 +64,7 @@ def signup_student(request):
     if request.method == "POST":
         name = request.POST.get("name")
         username = request.POST.get("username")
-        password = request.POST.get("password")
+        passkey = request.POST.get("password")
         age = int(request.POST.get("age"))
         grade = request.POST.get("grade")
         credits = int(request.POST.get("credits"))
@@ -74,12 +74,13 @@ def signup_student(request):
                 "error": "Username already taken"
             })
 
-        User.objects.create_user(username=username, password=password)
+        User.objects.create_user(username=username, password=passkey)
 
         # Save to studentData.txt
         UserManagement.createNewStudent(
             fullName=name,
             userName=username,
+            password=passkey,
             age=age,
             classStanding=grade,
             numCredits=credits,
