@@ -29,10 +29,17 @@ class DatabaseManager:
 
     #allows the admin to edit a course's data within the database
     def editCourseData(self, prevCourse: dict, newCourse: dict):
-        self = DatabaseManager(self.databasePath)
-        self.courseData[self.getIndexOfCourse(prevCourse)] = newCourse
-        print("success")
-        self.writeCourseList(self.databasePath)
+        #reloads the courseData from the database file before writing to it
+        self.courseData = self.readCourseList(self.databasePath)
+
+        courseIndex = self.getIndexOfCourse(prevCourse)
+
+        if courseIndex != -1:
+            self.courseData[courseIndex] = newCourse
+            self.writeCourseList(self.databasePath)
+        else:
+            print("Course not Found")
+        
 
     #returns the index of the course found in the courseData list[dict]
     def getIndexOfCourse(self, searchCourse: dict) -> int:
