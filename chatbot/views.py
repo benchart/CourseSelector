@@ -9,6 +9,11 @@ import pytz
 
 def chatbot_view(request):
     # Initialize session-based chat history if it doesn't exist
+    
+    if request.GET.get("clear") == "true":
+        request.session["chat_history"] = []
+        return redirect("chatbot:chatbot")
+    
     if "chat_history" not in request.session:
         request.session["chat_history"] = []
 
@@ -51,36 +56,9 @@ def chatbot_view(request):
     })
 
 def delete_account(request):
-    if request.method == "POST":
-        if request.user.is_authenticated:
-            username = request.user.username.lower()
-
-            # Delete Django user
-            request.user.delete()
-            logout(request)
-
-            # Remove from studentData.txt
-            filepath = os.path.join("core", "studentData.txt")
-            if os.path.exists(filepath):
-                print("Deleting from studentData.txt...")
-                try:
-                    with open(filepath, "r", encoding="utf-8") as file:
-                        lines = file.readlines()
-
-                    with open(filepath, "w", encoding="utf-8") as file:
-                        for line in lines:
-                            try:
-                                data = json.loads(line.strip())
-                                if data.get("username", "").lower() != username:
-                                    file.write(json.dumps(data) + "\n")
-                                else:
-                                    print(f"Removed user: {data.get('username')}")
-                            except json.JSONDecodeError:
-                                print("Skipping invalid JSON line")
-                                continue
-                except Exception as e:
-                    print(f"Error processing studentData.txt: {e}")
-    return redirect("/")
+    logout(request)
+    request.session.flush()  # ✅ Clears chat + all session data
+    return redirect("home")
 
 def login_and_manage(request):
     if request.method == "POST":
@@ -89,6 +67,10 @@ def login_and_manage(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-        return redirect("chatbot:chatbot")
-    return redirect("chatbot:chatbot")
 
+            # Clear old chat history when a user logs in
+            request.session["chat_history"] = []
+
+        return redirect("chatbot:chatbot")
+
+    return redirect("chatbot:chatbot")

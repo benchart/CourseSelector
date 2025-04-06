@@ -94,7 +94,7 @@ class DatabaseManager:
     
     #reads the course database
     @staticmethod       
-    def readCourseList(databasePath: str) -> dict:
+    def readCourseList(databasePath: str) -> list:
         try:
             with open(databasePath, "r") as file:
                     json_data = file.readline()

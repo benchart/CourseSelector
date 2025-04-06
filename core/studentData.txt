@@ -1,2 +1,8 @@
 {"name": "Test User", "username": "user1", "password": "1234", "age": 22, "class": "Junior", "credits": 22, "interestIndicies": [15, 19, 21, 24, 30, 46]}
 {"name": "jOHN", "username": "pork", "password": "pork", "age": 8000, "class": "Junior", "credits": 50, "interestIndicies": [15, 19, 21, 24, 30, 46]}
+<<<<<<< HEAD
+{"name": "test1", "username": "tester", "password": "123", "age": 18, "class": "Senior", "credits": 24, "interestIndicies": [0, 1, 2]}
+{"name": "123", "username": "123", "password": "123", "age": 123, "class": "Freshman", "credits": 123, "interestIndicies": [18, 14, 10]}
+=======
+{"name": "Ben Hartman", "username": "Benchart1", "password": "Boot", "age": 19, "class": "Freshman", "credits": 30, "interestIndicies": [0, 6, 3, 10, 17, 18, 22, 23, 24, 26, 27, 28, 29, 32, 34, 37, 47]}
+>>>>>>> 1f0bec237b311354e435794ff1d1796f9c197bde

@@ -12,7 +12,10 @@ from django.contrib.auth.decorators import login_required
 from courses.databaseManager import DatabaseManager
 from .forms import CourseForm
 from django.shortcuts import redirect
+from django.conf import settings
 import os
+
+DATABASE_PATH = os.path.join(settings.BASE_DIR, 'core', 'courseDatabase.txt')
 
 ADMIN_PASSKEY = "SuperSecretKey123"
 INTEREST_OPTIONS = [
@@ -181,8 +184,6 @@ def select_interests(request):
 
     return render(request, "core/interest_select.html", {"interests": INTEREST_OPTIONS})
 
-DATABASE_PATH = "core/courseDatabase.txt"  # Update as needed
-
 def class_management(request):
     db = DatabaseManager(DATABASE_PATH)
 
@@ -208,13 +209,18 @@ def class_management(request):
 
 def delete_course(request, course_id):
     db = DatabaseManager(DATABASE_PATH)
-    try:
-        course_to_delete = db.courseData[int(course_id)]
-        db.courseData.pop(int(course_id))
+    original_len = len(db.courseData)
+
+    # Filter out course with matching class_code
+    db.courseData = [course for course in db.courseData if course.get("class_code") != course_id]
+    
+    if len(db.courseData) < original_len:
         db.writeCourseList(DATABASE_PATH)
-    except IndexError:
-        print("Invalid course index for deletion.")
-    return redirect("manage_courses")
+    else:
+        print("Course not found or already deleted.")
+
+    return redirect("class_management")
+
 
 @csrf_protect
 @login_required
