@@ -48,23 +48,33 @@ def chatbot_view(request):
 def delete_account(request):
     if request.method == "POST":
         if request.user.is_authenticated:
-            username = request.user.username
+            username = request.user.username.lower()  # normalize case
+
+            # Delete from Django User model
             request.user.delete()
             logout(request)
 
             # Also remove from studentData.txt
             filepath = os.path.join("core", "studentData.txt")
             if os.path.exists(filepath):
-                with open(filepath, "r") as file:
-                    lines = file.readlines()
-                with open(filepath, "w") as file:
-                    for line in lines:
-                        try:
-                            data = json.loads(line.strip())
-                            if data.get("username").lower() != username.lower():
-                                file.write(json.dumps(data) + "\n")
-                        except json.JSONDecodeError:
-                            continue
+                print("Deleting from studentData.txt...")  # Debug
+                try:
+                    with open(filepath, "r", encoding="utf-8") as file:
+                        lines = file.readlines()
+
+                    with open(filepath, "w", encoding="utf-8") as file:
+                        for line in lines:
+                            try:
+                                data = json.loads(line.strip())
+                                if data.get("username", "").lower() != username:
+                                    file.write(json.dumps(data) + "\n")
+                                else:
+                                    print(f"Removed user: {data.get('username')}")
+                            except json.JSONDecodeError:
+                                print("Skipping invalid JSON line")
+                                continue
+                except Exception as e:
+                    print(f"Error processing studentData.txt: {e}")
     return redirect("/")
 
 
