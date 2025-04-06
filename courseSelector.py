@@ -1,5 +1,6 @@
 import json
 import ollama
+import re
 from core.userManagement import UserManagement
 
 INTEREST_OPTIONS = [
@@ -25,7 +26,7 @@ class CourseSelector:
 
 
     #master filtering function, uses the whole courseData dictionary to provide the most complete course list
-    def filterClassesMaster(self, **kwargs):
+    def filterClassesMaster(self, **kwargs) -> str:
         """
         Master filtering function that filters courses based on multiple parameters
         such as credits, catalogue numbers, subject, class codes, etc.
@@ -44,7 +45,7 @@ class CourseSelector:
         
         # Handle 'null' values and convert them to None or appropriate default
         def handle_null(value, default=None):
-            return default if value == 'null' or value is None else value
+            return default if value == 'null' or value is None or value == '' else value
 
         username = handle_null(kwargs.get('username', 'user1'), 'user1')
         catalogueNumMax = handle_null(kwargs.get('catalogueNumMax', 9999), 9999)
@@ -56,6 +57,11 @@ class CourseSelector:
         instructorName = kwargs.get('instructorName', [])
         status = kwargs.get('status', False)  # False is default for student status
         subjectName = kwargs.get('subjectName', [])
+
+        # Sanitize class_code and subjectName inputs to handle extra data
+        class_code = CourseSelector.sanitize_json_input(class_code) if isinstance(class_code, str) else class_code
+        subjectName = CourseSelector.sanitize_json_input(subjectName) if isinstance(subjectName, str) else subjectName
+
 
         # Convert values to appropriate types
         try:
@@ -105,9 +111,9 @@ class CourseSelector:
         self.courseData = self._filterByType('class_code', class_code)
 
         # After filtering based on the provided parameters, find relevant courses by interest
-        self.findRelevantCoursesByInterest(username, status)
-
-        return self.courseData
+        print(self.findRelevantCoursesByInterest(username, status))
+        return self.findRelevantCoursesByInterest(username, status)
+        #return self.courseData
 
 
 
@@ -158,13 +164,13 @@ class CourseSelector:
             print(F"Error occured: {KeyError}")
 
     #finds relevant classes based on the interest list
-    def findRelevantCoursesByInterest(self, username: str, status: bool):
+    def findRelevantCoursesByInterest(self, username: str, status: bool) -> str:
 
         interestList = CourseSelector._matchInterests(UserManagement.findUser(username, status))
 
         message = {
             'role': 'user', 
-            'content': f'Assume you are an academic advisor. Based on this list of my interests {interestList}, pick 15 classes from the list of potential classes and explain why you have selected them. Match your selections as closely as possible to my interests. Make sure you pick exactly 15. {self.courseData}'
+            'content': f'Assume you are my academic advisor. Based on this list of my interests {interestList}, pick 15 classes and explain why you have selected them. Match your selections as closely as possible to my interests. Use this data as your list of potential options: {self.courseData}'
         }
 
         response_content = []
@@ -202,6 +208,27 @@ class CourseSelector:
                         print(f"Error parsing JSON: {e}")
         except FileNotFoundError as e:
             print(f"Filepath not found for {databasePath}")
+
+
+    def sanitize_json_input(input_string: str) -> list:
+        """
+        This function will try to extract valid JSON from the input string,
+        and ignore any non-JSON content that may follow (like 'Morning classes should be excluded.')
+        """
+        try:
+            # Attempt to extract the part that looks like a JSON array
+            match = re.match(r'(\[.*\])', input_string.strip())  # regex to extract array-like content
+            if match:
+                # Parse the valid JSON array found
+                return json.loads(match.group(1))
+            else:
+                # If no valid JSON array is found, return an empty list
+                return []
+        except json.JSONDecodeError:
+            # In case of an invalid JSON, return an empty list
+            print(f"Error decoding JSON from input: {input_string}")
+            return []
+
 
     def getCourseData(self) -> list[dict]:
         return self.courseData
