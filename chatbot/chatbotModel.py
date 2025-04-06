@@ -16,6 +16,11 @@ os.environ["OLLAMA_HOST"] = "http://localhost:11434"
 
 class ChatbotModel:
 
+    def __init__(self):
+        self.management = UserManagement("studentData.txt", "adminData.txt")
+        self.courseSelector = CourseSelector("courseDatabase.txt")
+
+    @staticmethod
     def is_ollama_running():
         try:
             r = requests.get("http://localhost:11434")
@@ -71,6 +76,26 @@ class ChatbotModel:
     #used for execution of chatbot commands
 
     def callChatbot(self, prompt: str):
+        
+        try:
+            response = ollama.chat(
+                model='llama3.2',
+                messages=[{'role': 'user', 'content': prompt}],
+                tools=[
+                    self.get_random_joke,
+                    self.does_not_match,
+                    self.management.findUser,
+                    self.courseSelector.filterClassesMaster
+                ]
+                # temperature=0.2,
+                # system="You are a helpful assistant that helps students plan their class schedule.",
+                # top_p=0.95,
+                # repeat_penalty=1.1,
+            )
+        except Exception as e:
+            print("❌ ERROR calling ollama.chat:", e)
+            return "❌ Internal server error — check terminal for details."
+        
         response = ollama.chat(
             model='llama3.2',
             messages=[{'role': 'user', 'content': prompt}],
