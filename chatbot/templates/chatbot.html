@@ -44,26 +44,18 @@
   </div>
 </header>
 
-<!-- Control Buttons -->
+<!-- Undo/Redo Buttons -->
 <div class="flex justify-center items-center gap-4 py-4 bg-black">
-  <button id="restoreBtn" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition">
-    ⟲ Undo Clear
+  <button id="undoBtn" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition">
+    ⟲ Undo
   </button>
   <div class="w-px h-6 bg-gray-500"></div>
   <button id="redoBtn" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition">
-    ↻ Redo Clear
-  </button>
-  <div class="w-px h-6 bg-gray-500"></div>
-  <button id="resetBtn" class="bg-red-800 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition">
-    🔄 Reset Everything
-  </button>
-  <div class="w-px h-6 bg-gray-500"></div>
-  <button id="historyRestoreBtn" class="bg-blue-700 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition">
-    💬 Restore Past Chat
+    ↻ Redo
   </button>
 </div>
 
-<!-- Profile Dropdown (guest login/signup or account delete) -->
+<!-- Profile Dropdown -->
 <div id="dashboardPopup" class="hidden fixed top-20 right-4 bg-gray-800 border border-gray-600 rounded-lg shadow-lg p-6 w-80 z-50">
   {% if user.is_authenticated %}
     <h3 class="text-lg font-semibold mb-3">Account Management</h3>
@@ -115,55 +107,18 @@
       {% csrf_token %}
       <input type="text" name="message" placeholder="Type your question..." required class="flex-1 px-4 py-3 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full" />
       <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition w-full sm:w-auto">Send</button>
-      <button type="button" id="clearBtn" class="bg-red-700 hover:bg-red-800 text-white px-6 py-3 rounded-lg transition w-full sm:w-auto">Clear</button>
     </div>
   </div>
 </form>
 
+<!-- Scripts -->
 <script>
-  const showToast = (message) => {
-    const toast = document.getElementById('toast');
-    toast.textContent = message;
-    toast.style.display = 'block';
-    setTimeout(() => {
-      toast.style.display = 'none';
-    }, 2500);
-  };
-
-  const getIndianaTime = () => {
-    const now = new Date();
-    return new Intl.DateTimeFormat('en-US', {
-      timeZone: 'America/Indiana/Indianapolis',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: true
-    }).format(now);
-  };
-</script>
-
-<script>
-  const chatBox = document.getElementById('chat-box').querySelector('.space-y-4');
-  const inputBox = document.querySelector("input[name='message']");
-  const restoreBtn = document.getElementById("restoreBtn");
+  const chatBox = document.querySelector('#chat-box .space-y-4');
+  const undoBtn = document.getElementById("undoBtn");
   const redoBtn = document.getElementById("redoBtn");
-  const resetBtn = document.getElementById("resetBtn");
-  const historyRestoreBtn = document.getElementById("historyRestoreBtn");
-  const clearedHistory = [];
-  const redoHistory = [];
 
-  const saveChatToLocal = () => {
-    localStorage.setItem("chatBackup", chatBox.innerHTML);
-  };
-
-  const restoreLocalChat = () => {
-    const saved = localStorage.getItem("chatBackup");
-    if (saved) {
-      chatBox.innerHTML = saved;
-      decodeAll();
-      showToast("Previous chat restored!");
-    }
-  };
+  const undoStack = [];
+  const redoStack = [];
 
   const decodeAll = () => {
     const botMessages = document.querySelectorAll(".typing-message");
@@ -178,54 +133,39 @@
     });
   };
 
+  const scrollToBottom = () => {
+    const chatContainer = document.getElementById('chat-box');
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+  };
+
+  const saveCurrentState = () => {
+    undoStack.push(chatBox.innerHTML);
+    redoStack.length = 0;
+  };
+
   window.addEventListener("DOMContentLoaded", () => {
-    localStorage.setItem("chatBackup", document.querySelector(".space-y-4").innerHTML);
-    chatBox.innerHTML = "";
+    decodeAll();
+    saveCurrentState();
+    scrollToBottom();
   });
 
-  document.getElementById("clearBtn").addEventListener("click", () => {
-    if (chatBox.innerHTML.trim() !== "") {
-      clearedHistory.push(chatBox.innerHTML);
-      redoHistory.length = 0;
-      chatBox.innerHTML = "";
-    }
-    inputBox.value = "";
-    saveChatToLocal();
-  });
-
-  restoreBtn.addEventListener("click", () => {
-    if (clearedHistory.length > 0) {
-      const last = clearedHistory.pop();
-      redoHistory.push(chatBox.innerHTML);
-      chatBox.innerHTML = last;
+  undoBtn.addEventListener("click", () => {
+    if (undoStack.length > 1) {
+      redoStack.push(undoStack.pop());
+      chatBox.innerHTML = undoStack[undoStack.length - 1];
       decodeAll();
-      saveChatToLocal();
-      showToast("Chat restored at " + getIndianaTime());
+      scrollToBottom();
     }
   });
 
   redoBtn.addEventListener("click", () => {
-    if (redoHistory.length > 0) {
-      const redo = redoHistory.pop();
-      clearedHistory.push(chatBox.innerHTML);
-      chatBox.innerHTML = redo;
+    if (redoStack.length > 0) {
+      const redoState = redoStack.pop();
+      undoStack.push(redoState);
+      chatBox.innerHTML = redoState;
       decodeAll();
-      saveChatToLocal();
-      showToast("Redo successful at " + getIndianaTime());
+      scrollToBottom();
     }
-  });
-
-  resetBtn.addEventListener("click", () => {
-    localStorage.removeItem("chatBackup");
-    clearedHistory.length = 0;
-    redoHistory.length = 0;
-    chatBox.innerHTML = "";
-    inputBox.value = "";
-    showToast("Reset complete at " + getIndianaTime());
-  });
-
-  historyRestoreBtn.addEventListener("click", () => {
-    restoreLocalChat();
   });
 
   document.getElementById("profileIcon").addEventListener("click", () => {
