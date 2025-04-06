@@ -10,6 +10,21 @@ class DatabaseManager:
     
     
     #database functionality
+
+    #adds a new course to the database
+    def addNewCourse(self, class_code: str, subject: str,
+                     catalog_number: int, instructor: str,
+                     name: str, topic: str,
+                     start_time: str, end_time: str,
+                     days: str, prereqs: str,
+                     units: float, description: str):
+        
+        newCourse = DatabaseManager.updateCourse(class_code, subject, catalog_number, instructor, name, topic, start_time, end_time, days, prereqs, units, description)
+        self.courseData = self.readCourseList(self.databasePath)
+        self.courseData.append(newCourse)
+
+        self.writeCourseList(self.databasePath)
+
     @staticmethod
     def updateCourse(class_code: str, subject: str,
                      catalog_number: int, instructor: str,
