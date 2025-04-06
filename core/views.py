@@ -7,6 +7,12 @@ from django.contrib.auth.decorators import login_required
 from .userManagement import UserManagement  # <- Custom class
 import json
 from django.contrib import messages
+from django.contrib.auth import logout
+from django.contrib.auth.decorators import login_required
+from courses.databaseManager import DatabaseManager
+from .forms import CourseForm
+from django.shortcuts import redirect
+import os
 
 ADMIN_PASSKEY = "SuperSecretKey123"
 INTEREST_OPTIONS = [
@@ -153,14 +159,60 @@ def select_interests(request):
 
     return render(request, "core/interest_select.html", {"interests": INTEREST_OPTIONS})
 
-from django.contrib.auth import logout
-from django.contrib.auth.decorators import login_required
+DATABASE_PATH = "core/courseDatabase.txt"  # Update as needed
+
+def manage_courses(request):
+    db = DatabaseManager(DATABASE_PATH)
+
+    # Handle search
+    search_query = request.GET.get("search", "")
+    if search_query:
+        courses = db.searchCourse(search_query)
+    else:
+        courses = db.courseData
+
+    # Handle new course form
+    if request.method == "POST":
+        form = CourseForm(request.POST)
+        if form.is_valid():
+            db.addNewCourse(**form.cleaned_data)
+            return redirect("manage_courses")
+    else:
+        form = CourseForm()
+
+    return render(request, "core/manage_courses.html", {
+        "courses": courses,
+        "form": form
+    })
+
+def delete_course(request, course_id):
+    db = DatabaseManager(DATABASE_PATH)
+    try:
+        course_to_delete = db.courseData[int(course_id)]
+        db.courseData.pop(int(course_id))
+        db.writeCourseList(DATABASE_PATH)
+    except IndexError:
+        print("Invalid course index for deletion.")
+    return redirect("manage_courses")
 
 @csrf_protect
 @login_required
 def delete_account(request):
     if request.method == "POST":
-        user = request.user
+        username = request.user.username
+        request.user.delete()
         logout(request)
-        user.delete()
+
+        filepath = os.path.join("core", "studentData.txt")
+        if os.path.exists(filepath):
+            with open(filepath, "r") as file:
+                lines = file.readlines()
+            with open(filepath, "w") as file:
+                for line in lines:
+                    try:
+                        data = json.loads(line.strip())
+                        if data.get("username") != username:
+                            file.write(json.dumps(data) + "\n")
+                    except json.JSONDecodeError:
+                        continue
         return redirect("home")
