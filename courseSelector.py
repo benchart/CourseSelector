@@ -46,15 +46,15 @@ class CourseSelector:
         '''
 
 
-        catalogueNumMax = catalogueNumMax if catalogueNumMax is not None else float('inf') 
-        catalogueNumMin = catalogueNumMin if catalogueNumMin is not None else -float('inf')
-        creditMax = creditMax if creditMax is not None else float('inf') 
+        catalogueNumMax = catalogueNumMax if catalogueNumMax is not None else 9999
+        catalogueNumMin = catalogueNumMin if catalogueNumMin is not None else 0
+        creditMax = creditMax if creditMax is not None else 5 
         creditMin = creditMin if creditMin is not None else 0 
         instructorName = instructorName if instructorName is not None else []
         status = status if status is not None else False
-        subjectName = subjectName if subjectName is not None else ''
-        class_code = class_code if class_code is not None else ''
-        username = username if username is not None else ''
+        subjectName = subjectName if subjectName is not None else []
+        class_code = class_code if class_code is not None else []
+        username = username if username is not None else "user1"
 
         self.courseData = self._filterByNum('units', creditMin, creditMax)
         self.courseData = self._filterByNum('catalog_number', catalogueNumMin, catalogueNumMax)
