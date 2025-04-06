@@ -1,7 +1,6 @@
 from chatbot.chatbotModel import ChatbotModel
 from core.userManagement import UserManagement
 from courseSelector import CourseSelector
-import json
 
 class Filter:
     courseModel = CourseSelector("courseDatabase.txt")

@@ -39,11 +39,6 @@ class CourseSelector:
         self.findRelevantCourseByInterest(username, status)
 
 
-
-
-
-
-
     #fetches course based on a specified parameter
     def filterByType(self, parameterName: str, codeList: list) -> list[dict]:
         if codeList == []:
